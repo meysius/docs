@@ -38,35 +38,65 @@ Generate the schemas within some context
 $ mix phx.gen.context Blog User users 
 $ mix phx.gen.context Blog Post posts
 ```
-Adjust migration for the side holding the foreign key
+Adjust migrations and schemas
 ```elixir
-defmodule Project.Repo.Migrations.CreatePosts do
+# add to migration of the dependant
+add :user_id, references(:users)
+
+# add to users schema
+has_many :posts, Project.Blog.Post
+
+# add to posts schema
+belongs_to :user, Project.Blog.User
+```
+
+## One to One
+Generate the schemas within some context
+```
+$ mix phx.gen.context Blog User users 
+$ mix phx.gen.context Blog Profile profiles
+```
+Adjust migrations and schemas
+```elixir
+# add to migration of the dependant
+add :user_id, references(:users)
+
+# add to users schema
+has_one :profile, Project.Blog.Profile
+
+# add to profile schema
+belongs_to :user, Project.Blog.User
+```
+
+## many to many
+Generate the schemas within some contest, along with migration for the join table 
+```
+$ mix phx.gen.context Blog Post posts
+$ mix phx.gen.context Blog Hashtag hashtags
+$ mix ecto.gen.migration create_hashtags_posts
+```
+Adjust migrations and schemas
+```elixir
+# fill in the migration of the join table
+defmodule Project.Repo.Migrations.CreateHashtagsPosts do
   use Ecto.Migration
 
   def change do
-    create table(:posts) do
-      add :user_id, references(:users)
+    create table(:hashtags_posts) do
+      add :hashtag_id, references(:hashtags)
+      add :post_id, references(:posts)
     end
-  end
-end
-```
-Declare the relationship on the schema
-```elixir
-defmodule Project.Blog.User do
-  use Ecto.Schema
 
-  schema "users" do
-    has_many :posts, Project.Blog.Post
+    create unique_index(:hashtags_posts, [:hashtag_id, :post_id])
   end
 end
 
-defmodule Project.Blog.Post do
-  use Ecto.Schema
 
-  schema "posts" do
-    belongs_to :user, Project.Blog.User
-  end
-end
+# add to posts schema
+many_to_many :hashtags, Project.Blog.Hashtag, join_through: :hashtags_posts
+
+# add to hashtags schema
+many_to_many :posts, Project.Blog.Post, join_through: :hashtags_posts
 ```
 
 
