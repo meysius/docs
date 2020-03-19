@@ -51,7 +51,7 @@ defmodule Project.Repo.Migrations.CreatePosts do
 end
 ```
 Declare the relationship on the schema
-```
+```elixir
 defmodule Project.Blog.User do
   use Ecto.Schema
 
