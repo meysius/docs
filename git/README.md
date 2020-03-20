@@ -37,3 +37,8 @@ $ git cherry-pick commit_hash
 ```
 $ git revert commit_hash
 ```
+
+## Throw out all changes
+```
+$ git reset --hard && git clean -dfx
+```
