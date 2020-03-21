@@ -99,4 +99,29 @@ many_to_many :hashtags, Project.Blog.Hashtag, join_through: :hashtags_posts
 many_to_many :posts, Project.Blog.Post, join_through: :hashtags_posts
 ```
 
+# Changesets
+`%Ecto.Changeset{}` is a struct that is given to `Repo.update`, `Repo.insert`, and `Repo.delete`.
 
+How to create a changeset:
+```elixir
+# directly making the struct
+s = %Ecto.Changeset{data: %Sport{}, valid?:true}
+
+# using Ecto.Changeset.change/2
+# arg 1 = instance of the schema
+# arg 2 = map of attrs to be set on the instance
+u = Ecto.Changeset.cast %Sport{}, %{name: "Name"}
+
+# using Ecto.Changeset.cast/3
+# arg 1 = instance of the schema
+# arg 2 = map of attrs to be set on the instance
+# arg 3 = list of attr to be filtered from the map
+u = Ecto.Changeset.cast %Sport{}, %{name: "Name"}, [:name]
+```
+
+# Validations
+Validations are applied to changesets. Validation functions can be found in `Ecto.Changeset` modules. See examples below.
+```elixir
+Ecto.Changeset.validate_required changeset, [:attr_1, :attr_2]
+Ecto.Changeset.validate_number(changeset, :pi, greater_than: 3, less_than: 4)
+```
