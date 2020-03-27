@@ -125,3 +125,6 @@ Validations are applied to changesets. Validation functions can be found in `Ect
 Ecto.Changeset.validate_required changeset, [:attr_1, :attr_2]
 Ecto.Changeset.validate_number(changeset, :pi, greater_than: 3, less_than: 4)
 ```
+
+# Migrations
+https://hexdocs.pm/ecto/Ecto.Schema.html#module-primitive-types
