@@ -128,3 +128,33 @@ Ecto.Changeset.validate_number(changeset, :pi, greater_than: 3, less_than: 4)
 
 # Migrations
 https://hexdocs.pm/ecto/Ecto.Schema.html#module-primitive-types
+
+# Ecto Query Interface
+```elixir
+Sport |> first |> Repo.one
+Sport |> last |> Repo.one
+Sport |> Repo.get(1)
+Sport |> Repo.get_by(name: "Something")
+from(Sport) |> Repo.all
+from p in Post,
+  where: p.title == "Hello",
+  where: [state: "Sweden"],
+
+  limit: 1,
+  offset: 10,
+
+  order_by: c.name,
+  order_by: [c.name, c.title],
+  order_by: [asc: c.name, desc: c.title],
+
+  preload: [:comments],
+  preload: [comments: {c, likes: l}],
+
+  join: c in assoc(c, :comments),
+  join: p in Post, on: c.post_id == p.id,
+  group_by: p,
+
+  select: p,
+  select: {p.title, p.description},
+  select: [p.title, p.description],
+```
