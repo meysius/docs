@@ -85,7 +85,7 @@ $ docker build .
 
 # OR tag it while building
 
-$ docker build -t dockerid/nameyouwant:version 
+$ docker build -t dockerid/nameyouwant:version .
 ```
 
 ## Port Mapping between host computer and running container
