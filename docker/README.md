@@ -90,6 +90,10 @@ $ docker build .
 
 $ docker build -t dockerid/nameyouwant:version .
 ```
+- If your docker file is named `Dockerfile.dev` you should do:
+```
+$ docker build -f Dockerfile.dev .
+```
 
 ## Port Mapping between host computer and running container
 If you want to route traffic from a port of host to certain port of the container:
@@ -97,6 +101,10 @@ If you want to route traffic from a port of host to certain port of the containe
 $ docker run -p 3000:3000 <image_name>
 ```
 
+## Volume mapping between host computer and running container
+```
+$ docker run -v folders_not_to_map -v $(pwd):/app <imgae_id>
+```
 
 ## Run multiple container at the same time
 - make a file named `docker-compose.yml`:
