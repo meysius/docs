@@ -19,10 +19,13 @@ $ docker create <image_name>
 ```
 - Start a stopped container
 ```
-$ docker start -a <container_id>
-# -a is for attaching to container and see its output
+$ docker start <container_id>
 ```
-- Create a container from an image and run it
+- You can also attach to container and see its output while running
+```
+$ docker start -a <container_id>
+```
+- Create a container from an image and run it (`-d` could make it run as a daemon in background)
 ```
 $ docker run <image_name>
 ```
@@ -93,3 +96,28 @@ If you want to route traffic from a port of host to certain port of the containe
 ```
 $ docker run -p 3000:3000 <image_name>
 ```
+
+
+## Run multiple container at the same time
+- make a file named `docker-compose.yml`:
+```yml
+version: '3'
+services:
+  redis-server:
+    image: 'redis'
+  node-app:
+    restart: always
+    build: .
+    ports:
+      - "4001:8081"
+    volumes:
+      - /app/node_modules
+      - .:/app
+```
+- The two containers above are put on the same network.
+- The `node-app` container can access `redis-server` container using its name as a host name.
+- `docker-compose up` will create all containers defined in compose file
+- `docker-compose up -d` will run all containers defined in bg
+- `docker-compose down` will stop all containers
+- `docker-compose up --build` will force a rebuild
+- `docker-compose ps` lists running containers of the compose file
