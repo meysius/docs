@@ -94,6 +94,16 @@ $ docker build -t dockerid/nameyouwant:version .
 ```
 $ docker build -f Dockerfile.dev .
 ```
+- A docker file may specify multiple phases.
+- phases can be tagged:
+```
+FROM node:alpine as builder
+```
+- Every FROM statement ends the previous phase
+- Folders & files can be brought over to a phase from previous phase
+```
+COPY --from=builder /app/build /user/share/nginx/html
+```
 
 ## Port Mapping between host computer and running container
 If you want to route traffic from a port of host to certain port of the container:
@@ -116,11 +126,16 @@ services:
   node-app:
     restart: always
     build: .
+    # OR
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - "4001:8081"
     volumes:
       - /app/node_modules
       - .:/app
+    command: ["npm", "start"] # overriding commands
 ```
 - The two containers above are put on the same network.
 - The `node-app` container can access `redis-server` container using its name as a host name.
