@@ -144,3 +144,10 @@ services:
 - `docker-compose down` will stop all containers
 - `docker-compose up --build` will force a rebuild
 - `docker-compose ps` lists running containers of the compose file
+- To specify environment variable for an service in docker-compose:
+```yml
+    app:
+      environment:
+        -NAME=something
+        -NAME # pull from host computer
+```
