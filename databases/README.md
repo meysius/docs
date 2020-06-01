@@ -59,6 +59,7 @@ Find `postgresql.config` file:
 $ sudo find / -name "postgresql.conf"
 ```
 Find `listen_addresses = 'localhost'` and change it to `listen_addresses = '*'`
+
 Add two lines beliw to `pg_hba.conf`:
 ```
 host    all             all              0.0.0.0/0                       md5
