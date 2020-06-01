@@ -76,6 +76,14 @@ Importing dumps:
 $ psql db_name < dump.sql
 ```
 
+## Redis
+```
+$ sudo apt-get install redis-server
+```
+To make it password protected, open `/etc/redis/redis.conf` and uncoment `requirepass foobared` and restart the service.
+
+If you are accessing redis from outside, you also have to modify `bind` command with `bind 0.0.0.0 ::0`
+
 ## MySQL
 ```
 $ brew install mysql
