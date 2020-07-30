@@ -33,3 +33,15 @@ makes the component only re-render if props have changed
 # extend from PureComponent
 
 this base class has a pre-written shouldComponentUpdate which checks all props and if they are updated and then it allows or stops the render if props are not changed
+
+# HOC Example
+
+```js
+const withSomething = (WrappedComponent, arg1) => {
+	return props => (
+		<div x={arg1}>
+			<WrappedComponent {...props} />
+		</div>
+	);
+}
+```
