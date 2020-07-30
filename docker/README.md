@@ -7,6 +7,8 @@
 - Find out what images are cached and available with `docker images`
 - Community made images can be found from `hub.docker.com`.
 - Each image may have many specific versions (tags)
+- See all images by `docker images --all`
+- Delete all by `docker rmi -f $(docker images -a -q)`
 
 ## Containers
 - A container is an instance of an image whose hard drive may be in a different state due to programs executed on it
