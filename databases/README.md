@@ -53,10 +53,37 @@ $ psql postgres
 ```
 After this, revert the changes in `pg_hba.conf` file from `trust` to `md5` and restart postgresql.
 
+### Setting up remote Access:
+Find `postgresql.config` file:
+```
+$ sudo find / -name "postgresql.conf"
+```
+Find `listen_addresses = 'localhost'` and change it to `listen_addresses = '*'`
+
+Add two lines beliw to `pg_hba.conf`:
+```
+host    all             all              0.0.0.0/0                       md5
+host    all             all              ::/0                            md5
+```
+Do a `sudo service postgresql restart`.
+On the server do `netstat -nlt` you should see:
+```
+tcp        0      0 0.0.0.0:5432          0.0.0.0:*               LISTEN
+```
+To test from your local machine do: `psql -h ip -U user`
+
 Importing dumps:
 ```
 $ psql db_name < dump.sql
 ```
+
+## Redis
+```
+$ sudo apt-get install redis-server
+```
+To make it password protected, open `/etc/redis/redis.conf` and uncoment `requirepass foobared` and restart the service.
+
+If you are accessing redis from outside, you also have to modify `bind` command with `bind 0.0.0.0 ::0`
 
 ## MySQL
 ```
