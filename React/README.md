@@ -1,3 +1,6 @@
+# Hooks
+Must always be used in the root of functional components.
+
 # useEffect
 
 ```
@@ -15,12 +18,149 @@ This hook runs after every time react updates the DOM (that includes the first r
 		- The effect function runs after first render and every time any props changed. The cleanup runs before every re-render.
 	- If you give it dependencies
 		- The effect function runs after first render and every time one of the dependencies changed. The cleanup runs before every re-render.
+		- Rule of thumb: if effect function uses a variable of state or props that changes it should be declared as a dependency.
 	- If you give it empty array
 		- It runs the function after first render (and every time one of the dependencies changed which is never because there is no dependencies)
 		- The cleanup runs when unmounting.
 
 To summarize: Every execution of the effect runs after a certain render and it has a cleanup which runs when rendered DOM is being removed either for unmounting or for another render.  
 
+# useCallback
+
+```
+  useCallback(
+  	() => { ... }, // callback function
+  	[dep1, dep2, ...]
+  )
+```
+
+This hook is used when a function needs to be passed down to other components as a callback. We do not want this callback function to be re-evaluated everytime wrapping component is re-rendered because that will create performance or infinite lookp issues in children components. useCallback caches the function and re-evaluates it only when one of the dependencies change.
+
+# use Reducer
+ 
+Define the reducer funtion first
+```js
+const myReducer = (state, action) => {
+	switch (action.type) {
+		case 'A':
+			return newState;
+		case 'B':
+			return newState;
+		default:
+			return newState;
+	}
+}
+```
+
+Then in the functional component:
+```js
+const [state, dispatch] = useReducer(myReducer, initState);
+```
+
+Whenever your redecuer changes its state, React renders the entire c omponent again.
+
+# useMemo
+```
+useMemo(
+	() => { return whatYouNeedMemorized },
+  [dep1, dep2, ...]
+)
+```
+
+This is used for caching components and avoid unnecessary re-renders.
+
+
+# Custom Hooks
+
+Custom hooks are stateful logics we can extract and reuse. all other hooks can be used in making a custom hook and it is as if the body of that hook is directly written in whatever component the hook is used in.
+
+Ex:
+```js
+import { useReducer, useCallback } from 'react';
+
+const initialState = {
+  loading: false,
+  error: null,
+  data: null,
+  extra: null,
+  identifier: null
+};
+
+const httpReducer = (curHttpState, action) => {
+  switch (action.type) {
+    case 'SEND':
+      return {
+        loading: true,
+        error: null,
+        data: null,
+        extra: null,
+        identifier: action.identifier
+      };
+    case 'RESPONSE':
+      return {
+        ...curHttpState,
+        loading: false,
+        data: action.responseData,
+        extra: action.extra
+      };
+    case 'ERROR':
+      return { loading: false, error: action.errorMessage };
+    case 'CLEAR':
+      return initialState;
+    default:
+      throw new Error('Should not be reached!');
+  }
+};
+
+const useHttp = () => {
+  const [httpState, dispatchHttp] = useReducer(httpReducer, initialState);
+
+  const clear = useCallback(() => dispatchHttp({ type: 'CLEAR' }), []);
+
+  const sendRequest = useCallback(
+    (url, method, body, reqExtra, reqIdentifer) => {
+      dispatchHttp({ type: 'SEND', identifier: reqIdentifer });
+      fetch(url, {
+        method: method,
+        body: body,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(responseData => {
+          dispatchHttp({
+            type: 'RESPONSE',
+            responseData: responseData,
+            extra: reqExtra
+          });
+        })
+        .catch(error => {
+          dispatchHttp({
+            type: 'ERROR',
+            errorMessage: 'Something went wrong!'
+          });
+        });
+    },
+    []
+  );
+
+  return {
+    isLoading: httpState.loading,
+    data: httpState.data,
+    error: httpState.error,
+    sendRequest: sendRequest,
+    reqExtra: httpState.extra,
+    reqIdentifer: httpState.identifier,
+    clear: clear
+  };
+};
+
+export default useHttp;
+
+```
 
 # shouldComponentUpdate(nextProps, nextState) => { return true || false }
 
@@ -97,28 +237,39 @@ this.myRef.current.focus();
 # Context
 Context is used when u want to share some stuff with an entire component subtree instead of flowing props down all the way from root to leaf.
 
-
-```jsx
+Create a context
+```js
 const MyContext = React.createContext({ a: 1, b: 2 })
+```
 
-<!-- wrap around a root component -->
+Wrap around a root component
+```jsx
 <MyContext.Provider value={{ a: 1, b: 2 }}></MyContext.Provider>
+```
 
-<!-- Consuming context in jsx -->
+Consuming context in jsx
+```js
 <MyContext.Consumer>
   {
   	(context) => { return ... }
   }
 </MyContext.Consumer>
+```
 
-<!-- Accessing context from class component add to class body: -->
+Consuming context in class component
+Add to class body:
+```js
 static contextType = MyContext;
-<!-- then in any method of class: -->
+```
+
+Then in any method of class
+```js
 this.context.a
+```
 
-<!-- Or in functional components: -->
+Consuming context in functional component
+```js
 import { useContext } from 'react';
-
 const myContext = useContext(MyContext);
 myContext.a
 ```
