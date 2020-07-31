@@ -45,3 +45,80 @@ const withSomething = (WrappedComponent, arg1) => {
 	);
 }
 ```
+
+# Updating the state based on prevState
+```js
+this.setState((prevState, props) => {
+	return {
+		attr: prevState.attr + 1
+	}
+})
+```
+
+# Prop Types
+- Install `prop-types`
+```js
+import PropTypes from 'prop-types';
+
+Person.propTypes = {
+	click: PropTypes.func,
+	name: PropTypes.string,
+	age: Proptypes.number
+}
+```
+
+# Setting ref
+1 - you could do:
+```js
+<input ref={(e) => this.input = e} />
+
+this.input.focus();
+```
+
+2 - you can also do:
+```js
+constructor(props) {
+	super(props);
+	this.input = React.createRef();
+}
+<input ref={this.input} />
+this.input.current.focus();
+```
+
+3 - in functional components:
+```js
+import { useRef } from 'react';
+
+const myRef = useRef(null); // null is initial value
+<input ref={this.myRef} />
+this.myRef.current.focus();
+```
+
+# Context
+Context is used when u want to share some stuff with an entire component subtree instead of flowing props down all the way from root to leaf.
+
+
+```jsx
+const MyContext = React.createContext({ a: 1, b: 2 })
+
+<!-- wrap around a root component -->
+<MyContext.Provider value={{ a: 1, b: 2 }}></MyContext.Provider>
+
+<!-- Consuming context in jsx -->
+<MyContext.Consumer>
+  {
+  	(context) => { return ... }
+  }
+</MyContext.Consumer>
+
+<!-- Accessing context from class component add to class body: -->
+static contextType = MyContext;
+<!-- then in any method of class: -->
+this.context.a
+
+<!-- Or in functional components: -->
+import { useContext } from 'react';
+
+const myContext = useContext(MyContext);
+myContext.a
+```
