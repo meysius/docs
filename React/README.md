@@ -3,35 +3,35 @@ Must always be used in the root of functional components.
 
 # useEffect
 
+```js
+useEffect(
+  () => { ... }, // effect function
+  [dep1, dep2, ...]
+)
 ```
-  useEffect(
-  	() => { ... }, // effect function
-  	[dep1, dep2, ...]
-  )
-```
 
-This hooks is used when we want to cause side effects in functional components. Data fetching, setting up a subscription, and manually changing the DOM in React components are all examples of side effects.
-
-This hook runs after every time react updates the DOM (that includes the first render plus every time the props of the component changes); but you can control this. You can also return a cleanup function in the effect function.
-
-	- If you dont pass any thing as the second arg
-		- The effect function runs after first render and every time any props changed. The cleanup runs before every re-render.
-	- If you give it dependencies
-		- The effect function runs after first render and every time one of the dependencies changed. The cleanup runs before every re-render.
-		- Rule of thumb: if effect function uses a variable of state or props that changes it should be declared as a dependency.
-	- If you give it empty array
-		- It runs the function after first render (and every time one of the dependencies changed which is never because there is no dependencies)
-		- The cleanup runs when unmounting.
+- This hooks is used when we want to cause side effects in functional components. 
+- Data fetching, setting up a subscription, and manually changing the DOM in React components are all examples of side effects.
+- This hook runs after every time react updates the DOM (that includes the first render plus every time the props of the component changes); but you can control this. 
+- You can also return a cleanup function in the effect function.
+- If you dont pass any thing as the second arg
+  - The effect function runs after first render and every time any props changed. The cleanup runs before every re-render.
+- If you give it dependencies
+  - The effect function runs after first render and every time one of the dependencies changed. The cleanup runs before every re-render.
+  - Rule of thumb: if effect function uses a variable of state or props that changes it should be declared as a dependency.
+- If you give it empty array
+  - It runs the function after first render (and every time one of the dependencies changed which is never because there is no dependencies)
+  - The cleanup runs when unmounting.
 
 To summarize: Every execution of the effect runs after a certain render and it has a cleanup which runs when rendered DOM is being removed either for unmounting or for another render.  
 
 # useCallback
 
-```
-  useCallback(
-  	() => { ... }, // callback function
-  	[dep1, dep2, ...]
-  )
+```js
+const myCallback = useCallback(
+  () => { ... }, // callback function
+  [dep1, dep2, ...]
+)
 ```
 
 This hook is used when a function needs to be passed down to other components as a callback. We do not want this callback function to be re-evaluated everytime wrapping component is re-rendered because that will create performance or infinite lookp issues in children components. useCallback caches the function and re-evaluates it only when one of the dependencies change.
@@ -41,14 +41,14 @@ This hook is used when a function needs to be passed down to other components as
 Define the reducer funtion first
 ```js
 const myReducer = (state, action) => {
-	switch (action.type) {
-		case 'A':
-			return newState;
-		case 'B':
-			return newState;
-		default:
-			return newState;
-	}
+  switch (action.type) {
+    case 'A':
+      return newState;
+    case 'B':
+      return newState;
+    default:
+      return newState;
+  }
 }
 ```
 
@@ -62,7 +62,7 @@ Whenever your redecuer changes its state, React renders the entire c omponent ag
 # useMemo
 ```
 useMemo(
-	() => { return whatYouNeedMemorized },
+  () => { return whatYouNeedMemorized },
   [dep1, dep2, ...]
 )
 ```
@@ -178,20 +178,20 @@ this base class has a pre-written shouldComponentUpdate which checks all props a
 
 ```js
 const withSomething = (WrappedComponent, arg1) => {
-	return props => (
-		<div x={arg1}>
-			<WrappedComponent {...props} />
-		</div>
-	);
+  return props => (
+    <div x={arg1}>
+      <WrappedComponent {...props} />
+    </div>
+  );
 }
 ```
 
 # Updating the state based on prevState
 ```js
 this.setState((prevState, props) => {
-	return {
-		attr: prevState.attr + 1
-	}
+  return {
+    attr: prevState.attr + 1
+  }
 })
 ```
 
@@ -201,9 +201,9 @@ this.setState((prevState, props) => {
 import PropTypes from 'prop-types';
 
 Person.propTypes = {
-	click: PropTypes.func,
-	name: PropTypes.string,
-	age: Proptypes.number
+  click: PropTypes.func,
+  name: PropTypes.string,
+  age: Proptypes.number
 }
 ```
 
@@ -218,8 +218,8 @@ this.input.focus();
 2 - you can also do:
 ```js
 constructor(props) {
-	super(props);
-	this.input = React.createRef();
+  super(props);
+  this.input = React.createRef();
 }
 <input ref={this.input} />
 this.input.current.focus();
@@ -251,7 +251,7 @@ Consuming context in jsx
 ```js
 <MyContext.Consumer>
   {
-  	(context) => { return ... }
+    (context) => { return ... }
   }
 </MyContext.Consumer>
 ```
