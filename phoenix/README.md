@@ -152,10 +152,11 @@ my_changeset
 
 # Migrations
 https://hexdocs.pm/ecto/Ecto.Schema.html#module-primitive-types
-
+https://devhints.io/phoenix-migrations
 
 # Ecto Query Interface
 
+## Getting
 ```elixir
 first(User) |> Repo.one
 last(User) |> Repo.one
@@ -200,9 +201,48 @@ User
 |> select([c, p], {p.title, c.text})
 ```
 
-Batch Updating
+## Create/Update
+```elixir
+changeset |> Repo.update
+changeset |> Repo.insert
+changeset |> Repo.insert_or_update
+```
+
+## Batch Updating
 ```elixir
 from(p in Post, where: p.id < 10)
 |> Repo.update_all(set: [title: "Title"])
 |> Repo.update_all(inc: [views: 1])
 ```
+
+# Controllers
+```elixir
+conn.host          # → "example.com"
+conn.method        # → "GET"
+conn.path_info     # → ["posts", "1"]
+conn.request_path  # → "/posts/1"
+conn.query_string  # → "utm_source=twitter"
+conn.port          # → 80
+conn.scheme        # → :http
+conn.peer          # → { {127, 0, 0, 1}, 12345 }
+conn.remote_ip     # → { 151, 236, 219, 228 }
+conn.req_headers   # → [{"content-type", "text/plain"}]
+
+conn
+|> html("<html><head>...")
+|> json(%{ message: "Hello" })
+|> text("Hello")
+
+|> redirect(to: "/foo")
+|> redirect(external: "http://www.google.com/")
+|> halt()
+
+|> put_resp_content_type("text/plain")
+|> put_resp_cookie("abc", "def")
+|> put_resp_header("X-Delivered-By", "myapp")
+|> put_status(202)
+|> put_status(:not_found)
+```
+
+# Routing
+https://devhints.io/phoenix-routing
