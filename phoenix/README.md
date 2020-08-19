@@ -105,37 +105,69 @@ many_to_many :posts, Project.Blog.Post, join_through: :hashtags_posts
 How to create a changeset:
 ```elixir
 # directly making the struct
-s = %Ecto.Changeset{data: %Sport{}, valid?:true}
+c = %Ecto.Changeset{data: %Sport{}, valid?:true}
 
 # using Ecto.Changeset.change/2
 # arg 1 = instance of the schema
 # arg 2 = map of attrs to be set on the instance
-u = Ecto.Changeset.cast %Sport{}, %{name: "Name"}
+c = Ecto.Changeset.change %Sport{}, %{name: "Name"}
 
 # using Ecto.Changeset.cast/3
 # arg 1 = instance of the schema
 # arg 2 = map of attrs to be set on the instance
 # arg 3 = list of attr to be filtered from the map
-u = Ecto.Changeset.cast %Sport{}, %{name: "Name"}, [:name]
+c = Ecto.Changeset.cast %Sport{}, %{name: "Name"}, [:name]
 ```
 
 # Validations
-Validations are applied to changesets. Validation functions can be found in `Ecto.Changeset` modules. See examples below.
+Validations are applied to changesets. Validation functions can be found in `Ecto.Changeset` module. 
+First argument of these functions are always the changeset struct.
+See examples below.
 ```elixir
-Ecto.Changeset.validate_required changeset, [:attr_1, :attr_2]
-Ecto.Changeset.validate_number(changeset, :pi, greater_than: 3, less_than: 4)
+my_changeset
+|> validate_required(:attr) # or [:one, :two]
+
+|> validate_format(:email, ~r/@/)
+
+|> validate_inclusion(:age, 18..100)
+|> validate_exclusion(:role, ~w(admin superadmin))
+|> validate_subset(:pets, ~w(cat dog parrot whale))
+
+|> validate_length(:body, min: 1)
+|> validate_length(:body, min: 1, max: 160)
+|> validate_length(:partners, is: 2)
+
+|> validate_number(:pi, greater_than: 3) 
+|> validate_number(:pi, less_than: 4)
+|> validate_number(:pi, equal_to: 42)
+
+|> validate_change(:title, fn _, _ -> [])
+|> validate_confirmation(:password, message: "does not match")
+
+|> unique_constraint(:email)
+|> foreign_key_constraint(:post_id)
+|> assoc_constraint(:post)      # ensure post_id exists
+|> no_assoc_constraint(:post)   # negative (useful for deletions)
 ```
 
 # Migrations
 https://hexdocs.pm/ecto/Ecto.Schema.html#module-primitive-types
 
+
 # Ecto Query Interface
+
 ```elixir
-Sport |> first |> Repo.one
-Sport |> last |> Repo.one
-Sport |> Repo.get(1)
-Sport |> Repo.get_by(name: "Something")
-from(Sport) |> Repo.all
+first(User) |> Repo.one
+last(User) |> Repo.one
+Repo.get(User, 1)
+Repo.get_by(User, name: "Something")
+
+query |> Repo.all
+```
+
+There is two APIs for forming a query:
+1 - keyword based
+```elixir
 from p in Post,
   where: p.title == "Hello",
   where: [state: "Sweden"],
@@ -157,4 +189,20 @@ from p in Post,
   select: p,
   select: {p.title, p.description},
   select: [p.title, p.description],
+```
+
+2 - Pipe based
+```elixir
+User
+|> join(:inner, [u], p in Post, on: p.user_id == u.id)
+|> where([u], u.age > 18)
+|> select([u], u.name)
+|> select([c, p], {p.title, c.text})
+```
+
+Batch Updating
+```elixir
+from(p in Post, where: p.id < 10)
+|> Repo.update_all(set: [title: "Title"])
+|> Repo.update_all(inc: [views: 1])
 ```
