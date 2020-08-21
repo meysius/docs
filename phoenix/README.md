@@ -105,18 +105,18 @@ many_to_many :posts, Project.Blog.Post, join_through: :hashtags_posts
 How to create a changeset:
 ```elixir
 # directly making the struct
-c = %Ecto.Changeset{data: %Sport{}, valid?:true}
+c = %Ecto.Changeset{data: %Sport{}, valid?: true}
 
 # using Ecto.Changeset.change/2
 # arg 1 = instance of the schema
 # arg 2 = map of attrs to be set on the instance
-c = Ecto.Changeset.change %Sport{}, %{name: "Name"}
+c = Ecto.Changeset.change(%Sport{}, %{name: "Name"})
 
 # using Ecto.Changeset.cast/3
 # arg 1 = instance of the schema
 # arg 2 = map of attrs to be set on the instance
 # arg 3 = list of attr to be filtered from the map
-c = Ecto.Changeset.cast %Sport{}, %{name: "Name"}, [:name]
+c = Ecto.Changeset.cast(%Sport{}, %{name: "Name"}, [:name])
 ```
 
 # Validations
@@ -125,7 +125,7 @@ First argument of these functions are always the changeset struct.
 See examples below.
 ```elixir
 my_changeset
-|> validate_required(:attr) # or [:one, :two]
+|> validate_required(:attr) # or [:attr_1, :attr_2]
 
 |> validate_format(:email, ~r/@/)
 
@@ -183,7 +183,7 @@ from p in Post,
   preload: [:comments],
   preload: [comments: {c, likes: l}],
 
-  join: c in assoc(c, :comments),
+  join: c in assoc(u, :comments),
   join: p in Post, on: c.post_id == p.id,
   group_by: p,
 
@@ -214,6 +214,55 @@ from(p in Post, where: p.id < 10)
 |> Repo.update_all(set: [title: "Title"])
 |> Repo.update_all(inc: [views: 1])
 ```
+
+## Preloading while querying
+```elixir
+# Simple preloading
+from p in Post, preload: [:comments]
+
+# Nested preloading
+from p in Post, preload: [comments: :likes]
+
+# Preloading using join
+from p in Post, 
+  join: c in assoc(p, :comments), 
+  preload: [comments: c]
+
+# Nested preloading using join
+from p in Post,
+  join: c in assoc(p, :comments),
+  join: l in assoc(c, :likes),
+  preload: [comments: {c, likes: l}]
+```
+You can also filter the preloaded data. For more info, read `Ecto.Query.preload/3 |> h`
+
+## Preloading after querying
+```elixir
+# Use a single atom to preload an association
+posts = Repo.preload posts, :comments
+
+# Use a list of atoms to preload multiple associations
+posts = Repo.preload posts, [:comments, :authors]
+
+# Use a keyword list to preload nested associations as well
+posts = Repo.preload posts, [comments: [:replies, :likes], authors: []]
+
+# Use a keyword list to customize how associations are queried
+posts = Repo.preload posts, [comments: from(c in Comment, order_by: c.published_at)]
+
+# Use a two-element tuple for a custom query and nested association definition
+query = from c in Comment, order_by: c.published_at
+posts = Repo.preload posts, [comments: {query, [:replies, :likes]}]
+```
+
+# Saving Associations
+`Ecto.Changeset.put_assoc` can be used to make a change to the value of an association.
+```elixir
+Ecto.Changeset.put_assoc(post_changest, :tags, tags)
+```
+by default replacing the value of assoc (e.g. any change other than adding) will raise exception. to change this behaviour
+set on_replace to proper value:
+`:raise, :mark_as_invalid, :nilify, :update, :delete`
 
 # Controllers
 ```elixir
