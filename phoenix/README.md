@@ -151,8 +151,43 @@ my_changeset
 ```
 
 # Migrations
+```elixir
+create table(:documents) do
+  add :title, :string
+  add :title, :string, size: 40
+  add :title, :string, default: "Hello"
+  add :title, :string, default: fragment("now()")
+  add :title, :string, null: false
+  add :body, :text
+  add :age, :integer
+  add :price, :float
+  add :price, :float
+  add :price, :decimal, precision: 10, scale: 2
+  add :published_at, :utc_datetime
+  add :group_id, references(:groups)
+  add :object, :json
+
+  timestamps  # inserted_at and updated_at
+end
+
+drop table(:documents)
+
+create index(:posts, [:slug], concurrently: true)
+create unique_index(:posts, [:slug])
+drop index(:posts, [:name])
+
+rename table(:posts), :title, to: :summary
+rename table(:posts), to: table(:new_posts)
+
+alter table("posts") do
+  remove :title, :string, default: ""
+end
+```
+
 https://hexdocs.pm/ecto/Ecto.Schema.html#module-primitive-types
-https://devhints.io/phoenix-migrations
+
+https://hexdocs.pm/ecto_sql/Ecto.Migration.html
+
 
 # Ecto Query Interface
 
