@@ -384,4 +384,4 @@ defmodule App.Email do
   end
 end
 ```
-- This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex
+- This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex`
