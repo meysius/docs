@@ -330,3 +330,58 @@ conn
 
 # Routing
 https://devhints.io/phoenix-routing
+
+# Views
+Each view is a module that represents a cluster (e.g. a directory) of templates.
+
+```elixir
+defmodule AppWeb.PageView do
+  use AppWeb, :view
+end
+```
+
+This view represents a cluster of templates in `web/templates/page`
+
+# Setting up email sending
+- Add `bamboo` and `bamboo_smtp` to your dependencies.
+- Add a mailer module:
+```elixir
+defmodule App.Mailer do
+  use Bamboo.Mailer, otp_app: :app_name
+end
+```
+- Configure this mailer (If you are using SES, verify two email address, get smtp creds and you are good to go.)
+```elixir
+config :app_name, App.Mailer,
+  adapter: Bamboo.SMTPAdapter,
+  server: "...",
+  port: ...,
+  username: ...,
+  password: ...,
+  tls: :if_available,
+  ssl: false,
+  retries: 1
+```
+- Add layout files: `web/templates/layout/email.(html/text).eex`
+- We now need a cluster of templates. For example `web/templates/email/*`. Add view below in `web/views`
+```elixir
+defmodule AppWeb.EmailView do
+  use AppWeb, :view
+end
+```
+- Now you we need email factory modules:
+```elixir
+defmodule App.Email do
+  use Bamboo.Phoenix, view: AppWeb.EmailView
+
+  def welcome do
+    new_email()
+    |> to(...)
+    |> from(...)
+    |> subject(...)
+    |> put_layout({ AppWeb.LayoutView, :email })
+    |> render(:welcome)
+  end
+end
+```
+- This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex
