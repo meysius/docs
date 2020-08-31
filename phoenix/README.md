@@ -386,3 +386,122 @@ end
 ```
 - This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex`
 - Send email using: `App.Email.welcome() |> App.Mailer.deliver_now`
+
+
+# Setting up cors
+When using phoenix as an API, cors configs has to be set up otherwise you are going to get cross-origin error when trying to communicate with the API.
+- Add `{:cors_plug, "~> 2.0"}` to `mix.exs`
+- Add `plug CORSPlug` to `endpoint.ex`. (In docs it is added before `plug YourApp.Router`)
+
+Read more https://github.com/mschae/cors_plug
+
+# Setting up password encryption
+- Add `{:bcrypt_elixir, "~> 2.0"}` to `mix.exs`
+- Add to user migration
+```elixir
+# ...
+  add :email, :string
+  add :password_hash, :string
+# ...
+
+create unique_index(:users, [:email])
+```
+- Add the following two fields to user model
+```elixir
+field :password, :string, virtual: true
+field :password_hash, :string
+```
+
+- Remove `:password_hash` from cast and required valiadations and add below to user changeset:
+```elixir
+|> validate_length(:password, min: 8)
+|> unique_constraint(:email)
+|> put_password_hash
+```
+
+- Add the following private method to user model
+```elixir
+defp put_password_hash(changeset) do
+  case changeset do
+    %Ecto.Changeset{valid?: true, changes: %{password: password}}
+      ->
+        put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(password))
+    _ ->
+        changeset
+  end
+end
+```
+- To verify a password in controller do:
+```elixir
+Bcrypt.verify_pass("password", password_hash_from_db)
+```
+
+# Setting up jwt
+- Add `{:guardian, "~> 2.0"}` to `mix.exs`
+- Make a file in `lib/guardian.ex`:
+```elixir
+defmodule AppName.Guardian do
+  use Guardian, otp_app: :app_name
+
+  def subject_for_token(user, _claims) do
+    sub = to_string(user.id)
+    {:ok, sub}
+  end
+  def subject_for_token(_, _) do
+    {:error, :reason_for_error}
+  end
+
+  def resource_from_claims(claims) do
+    id = claims["sub"]
+    user = AppName.Repo.get(AppName.UserContext.User, id)
+    {:ok,  user}
+  end
+  def resource_from_claims(_claims) do
+    {:error, :reason_for_error}
+  end
+end
+```
+- Add to `config.exs`
+```elixir
+# Secret key. You can use `mix guardian.gen.secret` to get one
+config :app_name, AppName.Guardian,
+       issuer: "app_name",
+       secret_key: "hWf88T2zEh/+PE+B50hqOKlBrzBgMytS9glt4JlgV9E4xR7YEZL8pwggUeBH+dqT"
+```
+- Add `_web/auth_pipeline.ex`:
+```elixir
+defmodule AppName.Guardian.AuthPipeline do
+  use Guardian.Plug.Pipeline, otp_app: :app_name,
+  module: AppName.Guardian,
+  error_handler: AppName.AuthErrorHandler
+
+  # Can customize plugs below, read more on guardian github
+  plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+  plug Guardian.Plug.EnsureAuthenticated
+  plug Guardian.Plug.LoadResource
+end
+```
+- Add `_web/auth_error_handler.ex`
+```elixir
+defmodule AppName.AuthErrorHandler do
+  import Plug.Conn
+
+  def auth_error(conn, {type, _reason}, _opts) do
+    body = Jason.encode!(%{error: to_string(type)})
+    send_resp(conn, 401, body)
+  end
+
+end
+```
+- Add a new pipeline to `router.ex`:
+```elixir
+pipeline :jwt_authenticated do
+  plug AppName.Guardian.AuthPipeline
+end
+```
+- Use this pipelines on routes that require authentication
+- In controllers you have:
+```elixir
+resource = MyApp.Guardian.Plug.current_resource(conn)
+claims = MyApp.Guardian.Plug.current_claims(conn)
+```
