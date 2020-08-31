@@ -385,3 +385,4 @@ defmodule App.Email do
 end
 ```
 - This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex`
+- Send email using: `App.Email.welcome() |> App.Mailer.deliver_now`
