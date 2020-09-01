@@ -335,8 +335,8 @@ https://devhints.io/phoenix-routing
 Each view is a module that represents a cluster (e.g. a directory) of templates.
 
 ```elixir
-defmodule AppWeb.PageView do
-  use AppWeb, :view
+defmodule AppNameWeb.PageView do
+  use AppNameWeb, :view
 end
 ```
 
@@ -344,15 +344,15 @@ This view represents a cluster of templates in `web/templates/page`
 
 # Setting up email sending
 - Add `bamboo` and `bamboo_smtp` to your dependencies.
-- Add a mailer module:
+- Add a mailer module to `_web/mailers/mailer.ex`
 ```elixir
-defmodule App.Mailer do
+defmodule AppNameWeb.Mailer do
   use Bamboo.Mailer, otp_app: :app_name
 end
 ```
 - Configure this mailer (If you are using SES, verify two email address, get smtp creds and you are good to go.)
 ```elixir
-config :app_name, App.Mailer,
+config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: "...",
   port: ...,
@@ -363,29 +363,29 @@ config :app_name, App.Mailer,
   retries: 1
 ```
 - Add layout files: `web/templates/layout/email.(html/text).eex`
-- We now need a cluster of templates. For example `web/templates/email/*`. Add view below in `web/views`
+- To make a namespace of templates like `web/templates/email/*`, add view below in `web/views`
 ```elixir
-defmodule AppWeb.EmailView do
-  use AppWeb, :view
+defmodule AppNameWeb.EmailView do
+  use AppNameWeb, :view
 end
 ```
-- Now you we need email factory modules:
+- Makeemail factory module in `_web/emails/email.ex`
 ```elixir
-defmodule App.Email do
-  use Bamboo.Phoenix, view: AppWeb.EmailView
+defmodule AppName.Email do
+  use Bamboo.Phoenix, view: AppNameWeb.EmailView
 
   def welcome do
     new_email()
     |> to(...)
     |> from(...)
     |> subject(...)
-    |> put_layout({ AppWeb.LayoutView, :email })
+    |> put_layout({ AppNameWeb.LayoutView, :email })
     |> render(:welcome)
   end
 end
 ```
 - This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex`
-- Send email using: `App.Email.welcome() |> App.Mailer.deliver_now`
+- Send email using: `AppNameWeb.Email.welcome() |> AppNameWeb.Mailer.deliver_now`
 
 
 # Setting up cors
