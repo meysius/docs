@@ -350,8 +350,10 @@ defmodule AppNameWeb.Mailer do
   use Bamboo.Mailer, otp_app: :app_name
 end
 ```
-- Configure this mailer (If you are using SES, verify two email address, get smtp creds and you are good to go.)
+- If you are using SES, verify two email address then create SMTP creds. 
+- Configure this mailer:
 ```elixir
+# config for production
 config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.SMTPAdapter,
   server: "...",
@@ -361,6 +363,14 @@ config :app_name, AppNameWeb.Mailer,
   tls: :if_available,
   ssl: false,
   retries: 1
+
+# development
+config :app_name, AppNameWeb.Mailer,
+  adapter: Bamboo.LocalAdapter
+
+# test
+config :app_name, AppNameWeb.Mailer,
+  adapter: Bamboo.TestAdapter
 ```
 - Add layout files: `web/templates/layout/email.(html/text).eex`
 - To make a namespace of templates like `web/templates/email/*`, add view below in `web/views`
