@@ -368,6 +368,11 @@ config :app_name, AppNameWeb.Mailer,
 config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.LocalAdapter
 
+# To view mails in development add this to router.ex
+if Mix.env == :dev do
+  forward "/sent_emails", Bamboo.SentEmailViewerPlug
+end
+
 # test
 config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.TestAdapter
@@ -396,7 +401,6 @@ end
 ```
 - This module defines `welcome` email which renders `web/templates/email/welcome.(html/text).eex` in layout `web/templates/layout/email.(html/text).eex`
 - Send email using: `AppNameWeb.Email.welcome() |> AppNameWeb.Mailer.deliver_now`
-
 
 # Setting up cors
 When using phoenix as an API, cors configs has to be set up otherwise you are going to get cross-origin error when trying to communicate with the API.
@@ -514,4 +518,79 @@ end
 ```elixir
 resource = MyApp.Guardian.Plug.current_resource(conn)
 claims = MyApp.Guardian.Plug.current_claims(conn)
+```
+
+# Setting up exq and exq_ui for background jobs
+- Add `{:exq, "~> 0.14.0"}` and `{:exq_ui, "~> 0.11.0"}` dependencies
+- Add to `router.ex`
+```elixir
+  import Plug.BasicAuth
+
+  pipeline :exq do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :put_secure_browser_headers
+    if Mix.env() == :prod do
+      plug :basic_auth, Application.compile_env(:devchart, :exq_ui_basic_config)
+    end
+    plug ExqUi.RouterPlug, namespace: "exq"
+  end
+
+  scope "/exq", ExqUi do
+    pipe_through :exq
+    forward "/", RouterPlug.Router, :index
+  end
+```
+- Add to list of children in `application.ex`
+```elixir
+%{ id: Exq, start: { Exq, :start_link, [] } }
+```
+- Add to config:
+```elixir
+config :exq,
+  name: Exq,
+  host: "redis",
+  port: 6379,
+  password: nil,
+  namespace: "exq",
+  concurrency: :infinite,
+  queues: ["default", "emails"],
+  poll_timeout: 50,
+  scheduler_poll_timeout: 200,
+  scheduler_enable: true,
+  max_retries: 25,
+  mode: :default,
+  start_on_application: false
+
+config :exq_ui,
+  server: false
+
+config :app_name, :exq_ui_basic_config, 
+  username: "admin", 
+  password: "admin"
+```
+
+# Setting up bamboo with exq
+- Add `_web/bamboo_exq_strategy.ex`
+```elixir
+defmodule AppNameWeb.BambooExqStrategy do
+  @behaviour Bamboo.DeliverLaterStrategy
+
+  def deliver_later(adapter, email, config) do
+    binary = [adapter, email, config] |> :erlang.term_to_binary |> Base.encode64
+    {:ok, _jid} = Exq.enqueue(Exq, "emails", __MODULE__, [binary])
+  end
+
+  def perform(binary) do
+    [adapter, email, config] = binary |> Base.decode64! |> :erlang.binary_to_term
+    adapter.deliver(email, config)
+  end
+end
+```
+- Add to config for bamboo
+```elixir
+config :devchart, DevchartWeb.Mailer,
+  adapter: ...,
+  deliver_later_strategy: AppNameWeb.BambooExqStrategy
 ```
