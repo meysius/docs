@@ -450,7 +450,7 @@ end
 Bcrypt.verify_pass("password", password_hash_from_db)
 ```
 
-# Setting up jwt
+# Setting up jwt with guardian
 - Add `{:guardian, "~> 2.0"}` to `mix.exs`
 - Make a file in `lib/guardian.ex`:
 ```elixir
@@ -518,6 +518,90 @@ end
 ```elixir
 resource = MyApp.Guardian.Plug.current_resource(conn)
 claims = MyApp.Guardian.Plug.current_claims(conn)
+```
+
+# Setting up jwt setup with JOSE
+- Add `{:jose, "~> 1.10.1"}` to `mix.exs`
+- To be able to use HMAC algorithm, make a random secret key:
+```elixir
+:jose_base64url.encode(:jose_base64url.random 64)
+```
+- Add to your environment config file:
+```elixir
+config :app_name,
+  jwt_hmac_key: YOUR_KEY
+```
+- Use below functions for encoding and decoding
+```elixir
+  def create_jwt(user) do
+    Application.get_env(:app_name, :jwt_hmac_key) 
+    |> JOSE.JWK.from_oct
+    |> JOSE.JWT.sign(
+      %{ "alg" => "HS256" }, 
+      %{
+        "aud" => "devchart",
+        "sub" => user.id 
+      }
+    ) 
+    |> JOSE.JWS.compact
+    |> elem(1)
+  end
+
+  def decode_jwt(token) do
+    Application.get_env(:devchart, :jwt_hmac_key)
+    |> JOSE.JWK.from_oct
+    |> JOSE.JWT.verify_strict(["HS256"], token)
+    |> case do
+      { true,  %{ fields: payload }, _ } -> 
+        case payload do
+          %{ "aud" => aud } -> 
+            if aud == "devchart" do
+              payload
+            else
+              raise AppName.InvalidAuthToken
+            end
+          _ -> raise AppName.InvalidAuthToken
+        end
+      _ -> raise AppName.InvalidAuthToken
+    end
+  end
+```
+- Add AppNameWeb.Authenticate plug in `_web/authenticate.ex`
+```elixir
+defmodule AppNameWeb.Authenticate do
+  import Plug.Conn
+  import Phoenix.Controller
+  
+  alias AppName.Repo
+
+  def init(_params) do
+  end
+
+  def call(conn, _params) do
+    get_req_header(conn, "authorization")
+    |> case do
+      ["Bearer " <> token] -> token
+      _ -> nil
+    end
+    |> AppName.Auth.decode_jwt
+    |> case do
+      %{ "sub" => user_id } -> 
+        conn |> assign(:user, AppName.Auth.find_user_by_id(user_id))
+      _ -> 
+        raise AppName.InvalidAuthToken
+    end
+  rescue
+    e in AppName.InvalidAuthToken ->
+      conn 
+      |> put_status(401) 
+      |> json(%{ error_id: to_string(e.__struct__) })
+      |> halt()
+  end
+end
+```
+- To use the plug add to your controller:
+```elixir
+plug DevchartWeb.Authenticate when action in [:get_session]
 ```
 
 # Setting up exq and exq_ui for background jobs
