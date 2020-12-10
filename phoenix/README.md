@@ -218,8 +218,8 @@ from p in Post,
   preload: [:comments],
   preload: [comments: {c, likes: l}],
 
-  join: c in assoc(u, :comments),
-  join: p in Post, on: c.post_id == p.id,
+  join: c in assoc(p, :comments),
+  join: c in Comment, on: c.post_id == p.id,
   group_by: p,
 
   select: p,
