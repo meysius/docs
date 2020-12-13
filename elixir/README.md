@@ -503,4 +503,84 @@ use Foo
 ```
 
 ### What is OTP, Genserver, Supervisor
+
+#### OTP
+OTP is a collection of useful middleware, libraries, and tools written in the Erlang programming language. It is an integral part of the open-source distribution of Erlang.
+
+#### GenServer
+OTP behaviour that defines a generic server. A server is a process that listens for client requests and responds to them. 
+
+| Callback                        | What it does                                                 | What it usually returns |
+|---------------------------------|--------------------------------------------------------------|-------------------------|
+| init(state)                     | Initializes the server.                                      | {:ok, state}            |
+| handle_cast(pid, message)       | An async call that doesn’t demand an answer from the server. | {:noreply, state}       |
+| handle_call(pid, from, message) | A synchronous call that demands an answer from the server.   | {:reply, reply, state}  |
+
+Example
+```elixir
+defmodule Palace.Treasury do
+  use GenServer
+
+  # Client
+
+  def open() do
+    GenServer.start_link(__MODULE__, 0, name: __MODULE__)
+  end
+
+  def store(amount) do
+    GenServer.cast(__MODULE__, {:store, amount})
+  end
+
+  def withdraw(amount) do
+    GenServer.cast(__MODULE__, {:withdraw, amount})
+  end
+
+  def get_balance() do
+    GenServer.call(__MODULE__, :balance)
+  end
+
+  # Callbacks
+
+  def init(balance) do
+    {:ok, balance}
+  end
+
+  def handle_cast({:store, amount}, balance) do
+    {:noreply, balance + amount}
+  end
+
+  def handle_cast({:withdraw, amount}, balance) do
+    {:noreply, balance - amount}
+  end
+
+  def handle_call(:balance, _from, balance) do
+    {:reply, balance, balance}
+  end
+end
+```
+
+#### Supervisor
+OTP behaviour that works as an umbrella proccess that manages a bunch of sub processes.
+```elixir
+defmodule Palace.Treasury.Supervisor do
+  use Supervisor
+
+  def start_link(init_arg) do
+    Supervisor.start_link(__MODULE__, init_arg,  name: __MODULE__)
+  end
+
+  def init(_init_arg) do
+    children = [
+      %{
+       id: Palace.Treasury,
+       start: {Palace.Treasury, :open, []}
+      }
+    ]   
+
+
+    Supervisor.init(children, strategy: :one_for_one)
+  end
+end
+```
+
 https://serokell.io/blog/elixir-otp-guide
