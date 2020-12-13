@@ -501,3 +501,6 @@ import Foo
 # Invokes the custom code defined in Foo as an extension point
 use Foo
 ```
+
+### What is OTP, Genserver, Supervisor
+https://serokell.io/blog/elixir-otp-guide
