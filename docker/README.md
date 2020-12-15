@@ -1,4 +1,6 @@
 # Docker
+## Install
+- Go to docker.com, login and download docker for mac and install it
 
 ## Images
 - An image is an snapshot of the file system that can be used as hard drive of a virtual computer
