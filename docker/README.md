@@ -2,11 +2,13 @@
 ## Install
 - Go to docker.com, login and download docker for mac and install it
 - Open docker, click on the ship icon on mac's top bar and login
+- Check if installed with `docker version`
 
 ## Images
 - An image is an snapshot of the file system that can be used as hard drive of a virtual computer
 - Images also have a startup command that runs after bootup
-- Images can be defined using docker files or be downloaded from docker community website
+- Images can be defined using docker files or be downloaded from docker community website. 
+- The first time you mention an image, docker downloads it and caches it.
 - Find out what images are cached and available with `docker images`
 - Community made images can be found from `hub.docker.com`.
 - Each image may have many specific versions (tags)
@@ -15,12 +17,15 @@
 
 ## Containers
 - A container is an instance of an image whose hard drive may be in a different state due to programs executed on it
+- A container will have access to a sub-set of its host's physical resources (e.g. hard, memory, cpu, network, etc.)
+- This resource partitioning method is called namespacing and cgroups and is specific to linux. 
+- Thats why Mac and Windows use VM to host docker ecosystem
 - A container may be running or stopped
 - List all running containers with `docker ps`
 - List all stopped and running containers with `docker ps --all`
-- Create a container from an image
+- Create a container from an image.
 ```
-$ docker create <image_name>
+$ docker create <image_name> (<command>)?
 ```
 - Start a stopped container
 ```
@@ -30,7 +35,7 @@ $ docker start <container_id>
 ```
 $ docker start -a <container_id>
 ```
-- Create a container from an image and run it (`-d` could make it run as a daemon in background)
+- Create a container from an image and starts it while attaching to it to see its output (`-d` could make it run as a daemon in background)
 ```
 $ docker run <image_name>
 ```
@@ -47,11 +52,11 @@ $ docker system prune
 ```
 $ docker logs <container_id>
 ```
-- Stop a running container
+- Stop a running container (gracefully)
 ```
 $ docker stop <container_id>
 ```
-- Kill a running container
+- Kill a running container (immediately)
 ```
 $ docker kill <container_id>
 ```
