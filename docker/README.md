@@ -88,7 +88,7 @@ COPY from_path_in_local_machine to_path_in_image
 ```
 WORKDIR /usr/app
 ```
-- Specify the startup command:
+- Specify the default startup command for this image:
 ```
 CMD ["redis-server"]
 ```
@@ -99,7 +99,9 @@ $ docker build .
 # OR tag it while building
 
 $ docker build -t dockerid/nameyouwant:version .
+# version can be latest and then when using it you dont need to specify it
 ```
+- In order to build this image, docker creates intermediate images with every step and caches them5.
 - If your docker file is named `Dockerfile.dev` you should do:
 ```
 $ docker build -f Dockerfile.dev .
@@ -113,6 +115,25 @@ FROM node:alpine as builder
 - Folders & files can be brought over to a phase from previous phase
 ```
 COPY --from=builder /app/build /user/share/nginx/html
+```
+
+- Example:
+```
+FROM elixir:1.10.3-alpine
+WORKDIR /app
+RUN mix local.hex --force
+RUN mix local.rebar --force
+
+COPY mix.exs mix.lock ./
+RUN mix do deps.get, deps.compile
+
+COPY config config
+COPY lib lib
+COPY priv priv
+COPY test test
+RUN mix compile
+
+COPY ./ ./
 ```
 
 ## Port Mapping between host computer and running container
