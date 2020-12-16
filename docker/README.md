@@ -113,15 +113,21 @@ $ docker build -t docker_username/a_name:a_version .
 ```
 - If you do not specify a version, `latest` will be set by default
 - In order to build an image, docker creates intermediate images with every step and caches them. Thats why in dockerfile above we first copy package.json, install node modules then copy the entire source directory. If we did not do this, everytime we made a change in source files, docker would rebuild all node modules.
-- A docker file may specify multiple phases. Phases can be tagged using `as`
-```bash
+
+- A docker file may specify multiple phases (steps). This is done when we need to install different softwares in one image and you want to bring in the result of every step into the next step. 
+- Phases can be tagged using `as` which then can be used in later phases to copy files and folders over from them
+```Dockerfile
 FROM node:alpine as builder
+WORKDIR /app
+COPY package.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM nginx
+COPY --from=builder /app/build /usr/share/nginx/html
 ```
 - Every FROM statement ends the previous phase and starts a new one
-- Folders & files can be brought over to a phase from previous phase
-```bash
-COPY --from=builder /app/build /user/share/nginx/html
-```
 
 ## Mappings
 - Mapping ports between host and the running container is a runtime thing.
