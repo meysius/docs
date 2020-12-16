@@ -72,8 +72,8 @@ $ docker exec -it <container_id> <command>
 $ docker run -it <image_name> sh
 ```
 
-## Making a docker image using a Dockerfile
-- Make a file in a dir named `Dockerfile` and copy below code to it:
+## Dockerfile
+- To make your own image, make a file in a dir named `Dockerfile` and copy below code to it:
 ```Dockerfile
 # Specify a base image
 FROM node:alpine
@@ -84,9 +84,9 @@ WORKDIR /usr/app
 # Install some depenendencies
 # You can use `apk` package manager to install stuff if your image is alpine based: "RUN apk add --update redis"
 # Copy from local machine to image: "COPY local_path_relative_to_build_context to_image_path_relative_to_working_dir"
-COPY ./package.json ./
+COPY ./package.json .
 RUN npm install
-COPY ./ ./
+COPY . .
 
 # Default command
 CMD ["npm", "start"]
@@ -107,15 +107,13 @@ $ docker build .
 
 $ docker build -f Dockerfile.dev .
 ```
-
-# You can tag images when building them
+- You can tag images when building them
 ```bash
 $ docker build -t docker_username/a_name:a_version .
 ```
 - If you do not specify a version, `latest` will be set by default
-- In order to build an image, docker creates intermediate images with every step and caches them.
-- A docker file may specify multiple phases.
-- phases can be tagged:
+- In order to build an image, docker creates intermediate images with every step and caches them. Thats why in dockerfile above we first copy package.json, install node modules then copy the entire source directory. If we did not do this, everytime we made a change in source files, docker would rebuild all node modules.
+- A docker file may specify multiple phases. Phases can be tagged using `as`
 ```bash
 FROM node:alpine as builder
 ```
@@ -125,19 +123,18 @@ FROM node:alpine as builder
 COPY --from=builder /app/build /user/share/nginx/html
 ```
 
-## Port Mappings
-Mapping ports between host and the running container is a runtime thing.
-You can use below command to map you port 5000 to the running container's 3000
-```
+## Mappings
+- Mapping ports between host and the running container is a runtime thing.
+- You can use below command to map you port 5000 to the running container's 3000
+```bash
 $ docker run -p 5000:3000 <image_name>
 ```
-
-## Volume mapping between host computer and running container
-```
+- Volume mapping between host computer and running container
+```bash
 $ docker run -v folders_not_to_map -v $(pwd):/app <imgae_id>
 ```
 
-## Run multiple container at the same time
+## docker-compose file
 - make a file named `docker-compose.yml`:
 ```yml
 version: '3'
@@ -145,8 +142,8 @@ services:
   redis-server:
     image: 'redis'
   node-app:
-    restart: always
-    build: .
+    restart: always # this is for if it crashes or stopped, other options are: "no", always, on-failure, unless-stopped 
+    build: . # Use this folder to find a dockerfile
     # OR
     build: 
       context: .
@@ -156,6 +153,9 @@ services:
     volumes:
       - /app/node_modules
       - .:/app
+    environment:
+      - NAME # pull from host computer
+      - NAME=something
     command: ["npm", "start"] # overriding commands
 ```
 - The two containers above are put on the same network.
@@ -165,10 +165,8 @@ services:
 - `docker-compose down` will stop all containers
 - `docker-compose up --build` will force a rebuild
 - `docker-compose ps` lists running containers of the compose file
-- To specify environment variable for an service in docker-compose:
+- To specify environment variable for a service in docker-compose:
 ```yml
     app:
-      environment:
-        -NAME=something
-        -NAME # pull from host computer
+
 ```
