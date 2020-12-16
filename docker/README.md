@@ -1,6 +1,7 @@
 # Docker
 ## Install
 - Go to docker.com, login and download docker for mac and install it
+- Open docker, click on the ship icon on mac's top bar and login
 
 ## Images
 - An image is an snapshot of the file system that can be used as hard drive of a virtual computer
