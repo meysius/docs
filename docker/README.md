@@ -125,6 +125,7 @@ COPY . .
 RUN npm run build
 
 FROM nginx
+EXPOSE 80  # used by Elasticbeanstack
 COPY --from=builder /app/build /usr/share/nginx/html
 ```
 - Every FROM statement ends the previous phase and starts a new one
