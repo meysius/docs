@@ -24,122 +24,112 @@
 - List all running containers with `docker ps`
 - List all stopped and running containers with `docker ps --all`
 - Create a container from an image.
-```
+```bash
 $ docker create <image_name> (<command>)?
 ```
 - Start a stopped container
-```
+```bash
 $ docker start <container_id>
 ```
 - You can also attach to container and see its output while running
-```
+```bash
 $ docker start -a <container_id>
 ```
 - Create a container from an image and starts it while attaching to it to see its output (`-d` could make it run as a daemon in background)
-```
+```bash
 $ docker run <image_name>
 ```
 - Create a container from an image and run it with a custom startup command
-```
+```bash
 $ docker run <image_name> <command>
 ```
 - Once a container is made you cannot change its startup command
 - Delete stopped container and local image cache
-```
+```bash
 $ docker system prune
 ```
 - See all the logs emitted from a container
-```
+```bash
 $ docker logs <container_id>
 ```
 - Stop a running container (gracefully)
-```
+```bash
 $ docker stop <container_id>
 ```
 - Kill a running container (immediately)
-```
+```bash
 $ docker kill <container_id>
 ```
 - Execute a command inside a running container
-```
+```bash
 $ docker exec -it <container_id> <command>
 
 # -i is to attach to the new process's stdin, and -t is to make the outputs show up in terminal exactly as is
 # Example: docker exec -it <container_id> sh  # connect to command prompt
 ```
 - Create and run a container with opening a shell as startup command
-```
+```bash
 $ docker run -it <image_name> sh
 ```
 
 ## Making a docker image using a Dockerfile
-- make a file in a dir, name it `Dockerfile`
-- First specify the base image to start from: `FROM alpine`
-- You then need to prepare dependencies and install packages on that image
-- Install packages using `apk` if your image is alpine based:
-```
-RUN apk add --update redis
-```
-- Copy from local machine to image:
-```
-COPY from_path_in_local_machine to_path_in_image
-```
-- Specify the work directory. Any following command will be executed relative to this dir
-```
+- Make a file in a dir named `Dockerfile` and copy below code to it:
+```Dockerfile
+# Specify a base image
+FROM node:alpine
+
+# Specify the work directory. Any following command will be executed relative to this dir
 WORKDIR /usr/app
+
+# Install some depenendencies
+# You can use `apk` package manager to install stuff if your image is alpine based: "RUN apk add --update redis"
+# Copy from local machine to image: "COPY local_path_relative_to_build_context to_image_path_relative_to_working_dir"
+COPY ./package.json ./
+RUN npm install
+COPY ./ ./
+
+# Default command
+CMD ["npm", "start"]
 ```
-- Specify the default startup command for this image:
-```
-CMD ["redis-server"]
+- To select a base image, go to `hub.docker.com` click on explore
+- In docker world, The leanest images are named `alpine`
+- Different versions of every image are listed in "Tags" section.
+- Version of an image can be alphanumerical id
+- To use any base image you want do:
+```Dockerfile
+FROM imagename:version
 ```
 - Build image
-```
+```bash
 $ docker build .
 
-# OR tag it while building
+# OR
 
-$ docker build -t dockerid/nameyouwant:version .
-# version can be latest and then when using it you dont need to specify it
-```
-- In order to build this image, docker creates intermediate images with every step and caches them5.
-- If your docker file is named `Dockerfile.dev` you should do:
-```
 $ docker build -f Dockerfile.dev .
 ```
+
+# You can tag images when building them
+```bash
+$ docker build -t docker_username/a_name:a_version .
+```
+- If you do not specify a version, `latest` will be set by default
+- In order to build an image, docker creates intermediate images with every step and caches them.
 - A docker file may specify multiple phases.
 - phases can be tagged:
-```
+```bash
 FROM node:alpine as builder
 ```
-- Every FROM statement ends the previous phase
+- Every FROM statement ends the previous phase and starts a new one
 - Folders & files can be brought over to a phase from previous phase
-```
+```bash
 COPY --from=builder /app/build /user/share/nginx/html
 ```
 
-- Example:
+## Port Mappings
+Mapping ports between host and the running container is a runtime thing.
+You can use below command to map you port 5000 to the running container's 3000
 ```
-FROM elixir:1.10.3-alpine
-WORKDIR /app
-RUN mix local.hex --force
-RUN mix local.rebar --force
-
-COPY mix.exs mix.lock ./
-RUN mix do deps.get, deps.compile
-
-COPY config config
-COPY lib lib
-COPY priv priv
-COPY test test
-RUN mix compile
-
-COPY ./ ./
-```
-
-## Port Mapping between host computer and running container
-If you want to route traffic from a port of host to certain port of the container:
-```
-$ docker run -p 3000:3000 <image_name>
+$ docker run -p 5000:3000 <image_name>
 ```
 
 ## Volume mapping between host computer and running container
