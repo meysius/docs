@@ -129,9 +129,11 @@ COPY --from=builder /app/build /user/share/nginx/html
 ```bash
 $ docker run -p 5000:3000 <image_name>
 ```
-- Volume mapping between host computer and running container
+- We also can say every time container needs something in `/app` directory, reach back to directory x from the host
+- This is called volume mapping and is usually done in development environment instead of copying files and folders.
+- It is also necessary to sepcify exceptions when mapping volumes. For example we want to say map `/app` to folder x in host but never try to map anything agains `/app/node_modules`
 ```bash
-$ docker run -v folders_not_to_map -v $(pwd):/app <imgae_id>
+$ docker run -v /app/node_modules -v $(pwd):/app <imgae_id>
 ```
 
 ## docker-compose file
@@ -165,8 +167,3 @@ services:
 - `docker-compose down` will stop all containers
 - `docker-compose up --build` will force a rebuild
 - `docker-compose ps` lists running containers of the compose file
-- To specify environment variable for a service in docker-compose:
-```yml
-    app:
-
-```
