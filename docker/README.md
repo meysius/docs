@@ -174,3 +174,7 @@ services:
 - `docker-compose down` will stop all containers
 - `docker-compose up --build` will force a rebuild
 - `docker-compose ps` lists running containers of the compose file
+
+
+## AWS Deployment
+- If your project has only one Dockerfile, Elasticbeanstalk will build that image and deploys it automatically
