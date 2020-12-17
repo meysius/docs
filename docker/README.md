@@ -228,14 +228,6 @@ services:
 
 
 ## Kubernetes
-- There is one master, multiple nodes
-- Each node is a VM that can run different set of containers
-- A master is a VM with softwares installed to manage nodes
-- By default master decides what node should run a container
-- Deployments then will translate into passing a new desired state to master and master contineously tries to meet the desired state
-- In dev env do it using `minikube`, in production AWS EKS, Google GKE, or 
-- minikube -> create and run kubernetes cluster in your dev env
-- kubectl -> interacts with kubernetes cluster: what containers each node is running
 
 ### Install
 - `brew install minikube`
@@ -246,10 +238,18 @@ services:
 - `minikube ip` gives the ip of the cluster
 
 ### How it works?
+- A kubernetes cluster consists of one master and multiple nodes
+- Each node is a VM that can run different set of containers
+- A master is a VM with softwares installed to manage nodes
+- By default master decides what node should run a container
+- Deployments then will translate into passing a new desired state to master and master contineously tries to meet the desired state. This is called declarative deployment and is an alternative to imperative deployment which is what we have been doing before
+- In dev env we use `minikube`, in production AWS EKS, Google GKE
+- minikube -> create and run kubernetes cluster in your dev env
+- kubectl -> interacts with kubernetes cluster: what containers each node is running
 - kubernetes expects all images to already been built. so make sure they are pushed to docker hub
 - we need to make one config file per object
-- an object is a thing that exists in kubernetes cluster.
-- An object has a kind: pod, StatefulSet, ReplicaController, Service, etc
+- An object is a thing that exists in a kubernetes cluster.
+- An object has a kind: Pod, StatefulSet, ReplicaController, Service, etc
 - Each API version defines a different set of object kinds we can use 
   - for example v1 has: componentStatus, Endpoints, Namespace, configMap, Event, Pod
 - Pod is an object that runs one or more closely related containers that has to be deployed and operate together
@@ -258,7 +258,7 @@ services:
   - NodePort: Exposes a container to the outside world (only good for dev purposes)
   - Load Balancer
   - Ingress
-- Nodes will have something called kube-proxy which works as a gateway to outside world
+- Nodes will have something called kube-proxy which manages inbound and outbound traffic to the node.
 - Feed a yaml config to our cluster:
 ```
 $ kubectl apply -f <yaml_config>
@@ -270,36 +270,40 @@ $ kubectl get services
 ```
 
 ### Object config yaml
-- labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
-```ruby
-# --------------------------------
-...
+
+Example Pod config
+```yaml
+apiVersion: v1
+kind: Pod
 metadata:
-  ...
+  name: client-pod
   labels:
-    x: y
-...
-# --------------------------------
-
-# --------------------------------
-...
-spec: 
-  ...
-  selector:
-    x: y
-...
-# --------------------------------
-```
-- For a Service object of type NodePort, each entry in key `spec.ports` is a triple key-value: 
-```ruby
-...
+    component: web
 spec:
-  ...
-  ports:
-    - port: 3050           # a port for other pods to access what this service points to
-      targetPort: 3000     # the port on target pod to receive traffic
-      nodePort: 31515      # a port of node that is exposed to outer word (must be betweek 30000 to 32767)
-...
+  containers:
+    - name: client
+      image: stephengrider/multi-worker
+      ports:
+        - containerPort: 9999
 ```
+- labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
 
-
+Example NodePort config
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-node-port
+spec:
+  type: NodePort
+  ports:
+    - port: 3050
+      targetPort: 3000
+      nodePort: 31515
+  selector:
+    component: web
+```
+- For a NodePort Service, each entry in key `spec.ports` is a triple key-value:
+  - port: a port for other pods to access what this service points to
+  - targetPort: the port on target pod to receive traffic
+  - nodePort: a port of node that is exposed to outer word (must be betweek 30000 to 32767)
