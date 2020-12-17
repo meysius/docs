@@ -241,6 +241,7 @@ services:
 - `minikube status` or `kubectl cluster-info` to verify
 - `minikube ip` gives the ip of the cluster
 - In order to connect to kubernetes docker-server using your local docker-client do `eval $(minikube docker-env)`. This only makes change to your current terminal session
+- `minikube dashboard` gives u dashboard
 
 ### How it works?
 - A kubernetes cluster consists of one master and multiple nodes
@@ -408,3 +409,45 @@ Three different access modes:
   - ReadWriteOnce: can be used by a single node
   - ReadOnlyMany: many nodes can read
   - ReadWriteMany: many nodes can read and write
+
+Example for Ingress
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    certmanager.k8s.io/cluster-issuer: 'letsencrypt-prod'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  tls:
+    - hosts:
+        - k8s-multi.com
+        - www.k8s-multi.com
+      secretName: k8s-multi-com
+  rules:
+    - host: k8s-multi.com
+      http:
+        paths:
+          - path: /?(.*)
+            backend:
+              serviceName: client-cluster-ip-service
+              servicePort: 3000
+          - path: /api/?(.*)
+            backend:
+              serviceName: server-cluster-ip-service
+              servicePort: 5000
+    - host: www.k8s-multi.com
+      http:
+        paths:
+          - path: /?(.*)
+            backend:
+              serviceName: client-cluster-ip-service
+              servicePort: 3000
+          - path: /api/?(.*)
+            backend:
+              serviceName: server-cluster-ip-service
+              servicePort: 5000
+```
