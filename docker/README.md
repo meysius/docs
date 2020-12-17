@@ -235,12 +235,59 @@ services:
 - kubectl -> interacts with kubernetes cluster: what containers each node is running
 
 ### Install
+- `brew install minikube`
 - `brew install kubectl`
 - Install virtualbox
-- `brew install minikube`
 - `minikube start`
 - `minikube status` or `kubectl cluster-info` to verify
+
+### How it works?
 - kubernetes expects all images to already been built. so make sure they are pushed to docker hub
-- we need to make one config file per object (what is object?)
+- we need to make one config file per object
+- an object is a thing that exists in kubernetes cluster.
+- An object has a kind: pod, StatefulSet, ReplicaController, Service, etc
+- Each API version defines a different set of object kinds we can use 
+  - for example v1 has: componentStatus, Endpoints, Namespace, configMap, Event, Pod
+- Pod is an object that runs one or more closely related containers that has to be deployed and operate together
+- Service is an object that sets up networking in a cluster. This object could be of four different sub types:
+  - ClusterIP
+  - NodePort: Exposes a container to the outside world (only good for dev purposes)
+  - Load Balancer
+  - Ingress
+  
+- Nodes will have something called kube-proxy which works as a gateway to outside world
+
+### Object config yaml
+- labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
+```ruby
+# --------------------------------
+...
+metadata:
+  ...
+  labels:
+    x: y
+...
+# --------------------------------
+
+# --------------------------------
+...
+spec: 
+  ...
+  selector:
+    x: y
+...
+# --------------------------------
+```
+- For a Service object of type NodePort, each entry in key `spec.ports` is a triple key-value: 
+```ruby
+...
+spec:
+  ...
+  ports:
+    - port: 3050           # a port for other pods to access the target pod
+      targetPort: 3000     # the port on target pod to receive traffic
+      nodePort: 31515      # a port of node that is exposed to outer word (must be betweek 30000 to 32767)
+...
+```
 
 
