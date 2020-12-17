@@ -177,4 +177,50 @@ services:
 
 
 ## AWS Deployment
-- If your project has only one Dockerfile, Elasticbeanstalk will build that image and deploys it automatically
+- In aws, you can set source of inbound traffic of a security group to another security group. This means whoever belongs to that security group can access entities behind this security groups.
+- In order to deploy to AWS using aws-cli or ci/cd tools, you need a IAM user with deploy access.
+- Using AWS Elastic Beanstack, you can deploy your single or multiple container application to one single VPS. (For multiple container deploy, Elastic Beanstack uses Elastic Container Service under the hood.
+- If your project has only one Dockerfile, Elastic Beanstalk will automatically pick it up but if your project contains multiple docker files, you need to create a `Dockerrun.aws.json` file to help Elastic Beanstalk deploy your application.
+- 
+```json
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "client",
+      "image": "stephengrider/multi-client",
+      "hostname": "client",
+      "essential": false,   # if crashed, dont stop everything, you have to have at least one essential
+      "memory": 128
+    },
+    {
+      "name": "server",
+      "image": "stephengrider/multi-server",
+      "hostname": "api",
+      "essential": false,
+      "memory": 128
+    },
+    {
+      "name": "worker",
+      "image": "stephengrider/multi-worker",
+      "hostname": "worker",
+      "essential": false,
+      "memory": 128
+    },
+    {
+      "name": "nginx",
+      "image": "stephengrider/multi-nginx",
+      "hostname": "nginx",
+      "essential": true,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["client", "server"],  # in the world of ECS, we need to specify network accesses between containers like so
+      "memory": 128
+    }
+  ]
+}
+```
