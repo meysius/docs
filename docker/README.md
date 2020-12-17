@@ -260,8 +260,8 @@ services:
 - Pod is an object that runs one or more closely related containers that has to be deployed and operate together (only used in dev not prod)
 - Deployment is an object that runs (and constantly watches) one or more identical pods (good for dev and prod)
 - Service is an object that sets up networking in a cluster. This object could be of four different sub types:
-  - ClusterIP
-  - NodePort: Exposes a container to the outside world (only good for dev purposes)
+  - ClusterIP: Exposes a set of pods to other objects inside the cluster (not exposed to outside world)
+  - NodePort: Exposes a set of pods to the outside world (only good for dev purposes)
   - Load Balancer
   - Ingress
 - Nodes will have something called kube-proxy which manages inbound and outbound traffic to the node.
@@ -349,3 +349,18 @@ spec:
   - port: a port for other pods to access what this service points to
   - targetPort: the port on target pod to receive traffic
   - nodePort: a port of node that is exposed to outer word (must be betweek 30000 to 32767)
+
+Example ClusterIP config
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: web
+  ports:
+    - port: 3000
+      targetPort: 3000
+```
