@@ -181,7 +181,6 @@ services:
 - In order to deploy to AWS using aws-cli or ci/cd tools, you need a IAM user with deploy access.
 - Using AWS Elastic Beanstack, you can deploy your single or multiple container application to one single VPS. (For multiple container deploy, Elastic Beanstack uses Elastic Container Service under the hood.
 - If your project has only one Dockerfile, Elastic Beanstalk will automatically pick it up but if your project contains multiple docker files, you need to create a `Dockerrun.aws.json` file to help Elastic Beanstalk deploy your application.
-- 
 ```json
 {
   "AWSEBDockerrunVersion": 2,
@@ -190,7 +189,7 @@ services:
       "name": "client",
       "image": "stephengrider/multi-client",
       "hostname": "client",
-      "essential": false,   # if crashed, dont stop everything, you have to have at least one essential
+      "essential": false,
       "memory": 128
     },
     {
@@ -218,9 +217,11 @@ services:
           "containerPort": 80
         }
       ],
-      "links": ["client", "server"],  # in the world of ECS, we need to specify network accesses between containers like so
+      "links": ["client", "server"],
       "memory": 128
     }
   ]
 }
 ```
+- `essential` flag on a container specifies whether to stop everything if that container crashes
+- Unlike when you run multiple containers using docker-compose, Dockerrun file needs you to explicitly specify links between containers
