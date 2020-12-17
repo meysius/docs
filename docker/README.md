@@ -225,3 +225,22 @@ services:
 ```
 - `essential` flag on a container specifies whether to stop everything if that container crashes
 - Unlike when you run multiple containers using docker-compose, Dockerrun file needs you to explicitly specify links between containers
+
+
+## Kubernetes
+- There is one master, multiple nodes
+- Each node can run different set of containers
+- In dev env do it using `minikube`, in production AWS EKS, Google GKE, or 
+- minikube -> create and run kubernetes cluster in your dev env
+- kubectl -> interacts with kubernetes cluster: what containers each node is running
+
+### Install
+- `brew install kubectl`
+- Install virtualbox
+- `brew install minikube`
+- `minikube start`
+- `minikube status` or `kubectl cluster-info` to verify
+- kubernetes expects all images to already been built. so make sure they are pushed to docker hub
+- we need to make one config file per object (what is object?)
+
+
