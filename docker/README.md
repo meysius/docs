@@ -263,7 +263,8 @@ services:
   - ClusterIP: Exposes a set of pods to other objects inside the cluster (not exposed to outside world)
   - NodePort: Exposes a set of pods to the outside world (only good for dev purposes)
   - LoadBalancer: Legacy way of getting network traffic into a cluster 
-  - Ingress: Expose a set of services to the outside world
+  - Ingress: Expose a set of services to the outside world (make sure you are using kubernetes/ingress-nginx)
+    - To setup, follow instructions on the repo
 - Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
 - PersistentVolumeClaim is an object used by dbs to persist data, and is not tied to the database's pod
 - Secret is an object used to store sensitive env variables
