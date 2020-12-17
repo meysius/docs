@@ -229,7 +229,10 @@ services:
 
 ## Kubernetes
 - There is one master, multiple nodes
-- Each node can run different set of containers
+- Each node is a VM that can run different set of containers
+- A master is a VM with softwares installed to manage nodes
+- By default master decides what node should run a container
+- Deployments then will translate into passing a new desired state to master and master contineously tries to meet the desired state
 - In dev env do it using `minikube`, in production AWS EKS, Google GKE, or 
 - minikube -> create and run kubernetes cluster in your dev env
 - kubectl -> interacts with kubernetes cluster: what containers each node is running
@@ -240,6 +243,7 @@ services:
 - Install virtualbox
 - `minikube start`
 - `minikube status` or `kubectl cluster-info` to verify
+- `minikube ip` gives the ip of the cluster
 
 ### How it works?
 - kubernetes expects all images to already been built. so make sure they are pushed to docker hub
@@ -254,8 +258,16 @@ services:
   - NodePort: Exposes a container to the outside world (only good for dev purposes)
   - Load Balancer
   - Ingress
-  
 - Nodes will have something called kube-proxy which works as a gateway to outside world
+- Feed a yaml config to our cluster:
+```
+$ kubectl apply -f <yaml_config>
+```
+- Get the status of all pods:
+```
+$ kubectl get pods
+$ kubectl get services
+```
 
 ### Object config yaml
 - labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
@@ -284,7 +296,7 @@ spec:
 spec:
   ...
   ports:
-    - port: 3050           # a port for other pods to access the target pod
+    - port: 3050           # a port for other pods to access what this service points to
       targetPort: 3000     # the port on target pod to receive traffic
       nodePort: 31515      # a port of node that is exposed to outer word (must be betweek 30000 to 32767)
 ...
