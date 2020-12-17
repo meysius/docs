@@ -240,6 +240,7 @@ services:
 - `minikube start`
 - `minikube status` or `kubectl cluster-info` to verify
 - `minikube ip` gives the ip of the cluster
+- In order to connect to kubernetes docker-server using your local docker-client do `eval $(minikube docker-env)`. This only makes change to your current terminal session
 
 ### How it works?
 - A kubernetes cluster consists of one master and multiple nodes
