@@ -112,6 +112,10 @@ $ docker build -f Dockerfile.dev .
 $ docker build -t docker_username/a_name:a_version .
 ```
 - If you do not specify a version, `latest` will be set by default
+- You can push to docker hub using:
+```bash
+$ docker push docker_username/a_name
+```
 - In order to build an image, docker creates intermediate images with every step and caches them. Thats why in dockerfile above we first copy package.json, install node modules then copy the entire source directory. If we did not do this, everytime we made a change in source files, docker would rebuild all node modules.
 
 - A docker file may specify multiple phases (steps). This is done when we need to install different softwares in one image and you want to bring in the result of every step into the next step. 
@@ -252,7 +256,8 @@ services:
 - An object has a kind: Pod, StatefulSet, ReplicaController, Service, etc
 - Each API version defines a different set of object kinds we can use 
   - for example v1 has: componentStatus, Endpoints, Namespace, configMap, Event, Pod
-- Pod is an object that runs one or more closely related containers that has to be deployed and operate together
+- Pod is an object that runs one or more closely related containers that has to be deployed and operate together (only used in dev not prod)
+- Deployment is an object that runs (and constantly watches) one or more identical pods (good for dev and prod)
 - Service is an object that sets up networking in a cluster. This object could be of four different sub types:
   - ClusterIP
   - NodePort: Exposes a container to the outside world (only good for dev purposes)
@@ -263,12 +268,24 @@ services:
 ```
 $ kubectl apply -f <yaml_config>
 ```
+- Delete an object:
+```
+$ kubectl delete -f <yaml_config>
+```
 - Get the status of all pods:
 ```
 $ kubectl get pods
 $ kubectl get services
 ```
-
+- Get info about an object:
+```
+$ kubectl describe <object_type>
+$ kubectl describe <object_type> <object_name>
+```
+- Deploy latest version:
+```
+$ kubectl set image deployment/name container_name=docker_username/a_name:a_version
+```
 ### Object config yaml
 
 Example Pod config
@@ -287,6 +304,30 @@ spec:
         - containerPort: 9999
 ```
 - labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
+
+Example Deployment config
+```yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+        - name: client
+          image: stephengrider/multi-client
+          ports:
+            - containerPort: 3000
+```
 
 Example NodePort config
 ```yaml
