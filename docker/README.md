@@ -264,19 +264,28 @@ services:
   - NodePort: Exposes a set of pods to the outside world (only good for dev purposes)
   - Load Balancer
   - Ingress
+- Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
+- PersistentVolumeClaim is an object used by dbs to persist data, and is not tied to the database's pod
+- Secret is an object used to store sensitive env variables
 - Nodes will have something called kube-proxy which manages inbound and outbound traffic to the node.
 - Feed a yaml config to our cluster:
-```
+```bash   
 $ kubectl apply -f <yaml_config>
 ```
 - Delete an object:
-```
+```bash
 $ kubectl delete -f <yaml_config>
 ```
-- Get the status of all pods:
+- Create a secret object imperatively:
+```bash
+kubectl create secret generic <secret_name> --from-literal key=value
 ```
+- Get the status of all objects of same kind:
+```bash
 $ kubectl get pods
 $ kubectl get services
+$ kubectl get pv    ( for persistent volumes )
+$ kubectl get pvc    ( for persistent volumes claims )
 ```
 - Get info about an object:
 ```
@@ -286,6 +295,10 @@ $ kubectl describe <object_type> <object_name>
 - Deploy latest version:
 ```
 $ kubectl set image deployment/name container_name=docker_username/a_name:a_version
+```
+- Get logs for a pod:
+```
+$ kubectl logs pod_name
 ```
 ### Object config yaml
 
@@ -308,26 +321,39 @@ spec:
 
 Example Deployment config
 ```yaml
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client-deployment
+  name: postgres-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: web
+      component: postgres
   template:
     metadata:
       labels:
-        component: web
+        component: postgres
     spec:
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
       containers:
-        - name: client
-          image: stephengrider/multi-client
+        - name: postgres
+          image: postgres
           ports:
-            - containerPort: 3000
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD
 ```
 
 Example NodePort config
@@ -351,7 +377,7 @@ spec:
   - nodePort: a port of node that is exposed to outer word (must be betweek 30000 to 32767)
 
 Example ClusterIP config
-```
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -364,3 +390,20 @@ spec:
     - port: 3000
       targetPort: 3000
 ```
+Example of PersistentVolumeClaim
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+```
+Three different access modes: 
+  - ReadWriteOnce: can be used by a single node
+  - ReadOnlyMany: many nodes can read
+  - ReadWriteMany: many nodes can read and write
