@@ -351,6 +351,34 @@ spec:
                   key: PGPASSWORD
 ```
 
+#### Volume
+- Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
+
+#### PersistentVolumeClaim
+- This object is used to persist data independant from a pod
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+```
+Three different access modes: 
+  - ReadWriteOnce: can be used by a single node
+  - ReadOnlyMany: many nodes can read
+  - ReadWriteMany: many nodes can read and write
+  
+#### Secret
+- This is an object used to store sensitive env variables. create a secret object imperatively:
+```bash
+kubectl create secret generic <secret_name> --from-literal key=value
+```
+
 #### Service
 - Service is an object that sets up networking in a cluster. There are four sub-types: ClusterIP, NodePort, LoadBalancer, Ingress
 
@@ -436,32 +464,4 @@ spec:
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
-```
-
-#### Volume
-- Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
-
-#### PersistentVolumeClaim
-- This object is used to persist data independant from a pod
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: database-persistent-volume-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-```
-Three different access modes: 
-  - ReadWriteOnce: can be used by a single node
-  - ReadOnlyMany: many nodes can read
-  - ReadWriteMany: many nodes can read and write
-  
-#### Secret
-- This is an object used to store sensitive env variables. create a secret object imperatively:
-```bash
-kubectl create secret generic <secret_name> --from-literal key=value
 ```
