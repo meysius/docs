@@ -247,29 +247,19 @@ services:
 - A kubernetes cluster consists of one master and multiple nodes
 - Each node is a VM that can run different set of containers
 - A master is a VM with softwares installed to manage nodes
-- By default master decides what node should run a container
-- Deployments then will translate into passing a new desired state to master and master contineously tries to meet the desired state. This is called declarative deployment and is an alternative to imperative deployment which is what we have been doing before
+- By default master decides what node should run what containers
+- Master keeps a record of its current state, and a desired state
+- Changes to a cluster, including deploying a newer version of an image, can be done imperatively or declaratively
+- Declarative is telling cluster to change its desired states (possibly by passing a new yaml file that updates some existing configurations) - This is always prefered
+- Imperative is telling cluster to make a specific change
 - In dev env we use `minikube`, in production AWS EKS, Google GKE
-- minikube -> create and run kubernetes cluster in your dev env
-- kubectl -> interacts with kubernetes cluster: what containers each node is running
+- `minikube` create and run kubernetes cluster in your dev env
+- `kubectl` interacts with kubernetes cluster and tells it what to do or run
 - kubernetes expects all images to already been built. so make sure they are pushed to docker hub
-- we need to make one config file per object
-- An object is a thing that exists in a kubernetes cluster.
-- An object has a kind: Pod, StatefulSet, ReplicaController, Service, etc
-- Each API version defines a different set of object kinds we can use 
-  - for example v1 has: componentStatus, Endpoints, Namespace, configMap, Event, Pod
-- Pod is an object that runs one or more closely related containers that has to be deployed and operate together (only used in dev not prod)
-- Deployment is an object that runs (and constantly watches) one or more identical pods (good for dev and prod)
-- Service is an object that sets up networking in a cluster. This object could be of four different sub types:
-  - ClusterIP: Exposes a set of pods to other objects inside the cluster (not exposed to outside world)
-  - NodePort: Exposes a set of pods to the outside world (only good for dev purposes)
-  - LoadBalancer: Legacy way of getting network traffic into a cluster 
-  - Ingress: Expose a set of services to the outside world (make sure you are using kubernetes/ingress-nginx)
-    - To setup, follow instructions on the repo
-- Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
-- PersistentVolumeClaim is an object used by dbs to persist data, and is not tied to the database's pod
-- Secret is an object used to store sensitive env variables
-- Nodes will have something called kube-proxy which manages inbound and outbound traffic to the node.
+- When forming a clusture, it is usually not important how many nodes this cluster will have
+- minikube only runs one node for you in development, but when going to production you can have more
+- What is important is a kubernetes cluster consists of multiple objects working alongside eachother
+- We declare objects with config files
 - Feed a yaml config to our cluster:
 ```bash   
 $ kubectl apply -f <yaml_config>
@@ -278,16 +268,12 @@ $ kubectl apply -f <yaml_config>
 ```bash
 $ kubectl delete -f <yaml_config>
 ```
-- Create a secret object imperatively:
-```bash
-kubectl create secret generic <secret_name> --from-literal key=value
-```
 - Get the status of all objects of same kind:
 ```bash
 $ kubectl get pods
 $ kubectl get services
 $ kubectl get pv    ( for persistent volumes )
-$ kubectl get pvc    ( for persistent volumes claims )
+$ kubectl get pvc   ( for persistent volumes claims )
 ```
 - Get info about an object:
 ```
@@ -302,9 +288,14 @@ $ kubectl set image deployment/name container_name=docker_username/a_name:a_vers
 ```
 $ kubectl logs pod_name
 ```
-### Object config yaml
 
-Example Pod config
+### Object config yaml
+- An object belongs to a particular kind: Pod, Deployment, StatefulSet, ReplicaController, Service, 
+- Each API version defines a different set of object kinds we can use. For example v1 has: componentStatus, Endpoints, Namespace, configMap, Event, Pod
+
+#### Pod
+- Pod is an object that runs one or more closely related containers that has to be deployed and operate together
+- There are limits for what changes you can make to a Pod after its made, some changes are just not supported thus require you to delete the pod and create a new one
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -321,7 +312,9 @@ spec:
 ```
 - labels (may contain arbitrary key values) under metadata can be used to later select this object by other objects
 
-Example Deployment config
+#### Delpoyment
+- Deployment is an object that runs (and constantly watches) one or more identical pods, by defining a pod template and killing and re-creating pods whenever changes to the template is not supported on the existing pods
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -358,7 +351,27 @@ spec:
                   key: PGPASSWORD
 ```
 
-Example NodePort config
+#### Service
+- Service is an object that sets up networking in a cluster. There are four sub-types: ClusterIP, NodePort, LoadBalancer, Ingress
+
+#### ClusterIP
+- An object that exposes a set of pods to other objects inside the cluster (not exposed to outside world)
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: web
+  ports:
+    - port: 3000
+      targetPort: 3000
+```
+
+#### NodePort
+- This object exposes a set of pods to the outside world (only good for dev purposes)
 ```yaml
 apiVersion: v1
 kind: Service
@@ -373,44 +386,17 @@ spec:
   selector:
     component: web
 ```
-- For a NodePort Service, each entry in key `spec.ports` is a triple key-value:
-  - port: a port for other pods to access what this service points to
-  - targetPort: the port on target pod to receive traffic
-  - nodePort: a port of node that is exposed to outer word (must be betweek 30000 to 32767)
+- port: a port for other pods to access what this service points to
+- targetPort: the port on target pod to receive traffic
+- nodePort: a port of node that is exposed to outer word (must be betweek 30000 to 32767)
 
-Example ClusterIP config
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: client-cluster-ip-service
-spec:
-  type: ClusterIP
-  selector:
-    component: web
-  ports:
-    - port: 3000
-      targetPort: 3000
-```
-Example of PersistentVolumeClaim
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: database-persistent-volume-claim
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 2Gi
-```
-Three different access modes: 
-  - ReadWriteOnce: can be used by a single node
-  - ReadOnlyMany: many nodes can read
-  - ReadWriteMany: many nodes can read and write
 
-Example for Ingress
+#### LoadBalancer
+- Legacy way of getting network traffic into a cluster
+
+#### Ingress
+- Expose a set of services to the outside world (make sure you are using kubernetes/ingress-nginx)
+- To setup, follow instructions on the repo
 ```yaml
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -450,4 +436,32 @@ spec:
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
+```
+
+#### Volume
+- Volume is an object that is tied to a specific Pod and is used to persist data. this is not good because if pod dies, data dies with it
+
+#### PersistentVolumeClaim
+- This object is used to persist data independant from a pod
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+```
+Three different access modes: 
+  - ReadWriteOnce: can be used by a single node
+  - ReadOnlyMany: many nodes can read
+  - ReadWriteMany: many nodes can read and write
+  
+#### Secret
+- This is an object used to store sensitive env variables. create a secret object imperatively:
+```bash
+kubectl create secret generic <secret_name> --from-literal key=value
 ```
