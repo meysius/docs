@@ -1,3 +1,30 @@
+
+# Activating SSH for git
+- Make a key pair or choose an existing one to use
+- edit `~/.ssh/config`, add:
+```
+# GitLab.com server
+Host gitlab.com
+RSAAuthentication yes
+IdentityFile ~/.ssh/name_of_your_key
+```
+
+- Print public-key:
+```
+$ cat ~/.ssh/name_of_your_key.pub
+```
+- go paste that in your repo client (e.g. github account, bitbucket account, gitlab account)
+
+- Test if your connection is ok?
+```
+$ ssh -T git@github.com
+$ ssh -T git@bitbucket.com
+$ ssh -T git@gitlab.com
+$ ssh -T git@git.toptal.com
+```
+
+Enjoy pushing and pulling with ssh method.
+
 Create a branch
 ```
 $ git checkout -b name from_branch
