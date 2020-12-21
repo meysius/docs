@@ -420,10 +420,15 @@ spec:
 
 
 #### LoadBalancer
-- Legacy way of getting network traffic into a cluster
+- Legacy way of getting network traffic into a cluster.
+- It can only drive traffic to one set of Pods. There is no routing functionality unlike Ingress.
+- Cloud provider use their provisioned classic load balancer in the background to achieve this.
 
 #### Ingress
-- Expose a set of services to the outside world (make sure you are using kubernetes/ingress-nginx)
+- Expose a set of services to the outside world
+- There are different implementation of this and we use kubernetes/ingress-nginx
+- Setting this up is different depending on the environment you are running your kubernetes on
+- Very similar to how Deployment is a Controller that controls Pods with template and what not, with Ingress there will also be an ingress controller and a deployment runing nginx pods
 - To setup, follow instructions on the repo
 ```yaml
 apiVersion: extensions/v1beta1
