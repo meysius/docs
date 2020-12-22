@@ -447,3 +447,28 @@ spec:
             serviceName: client-cluster-ip-service
             servicePort: 3000
 ```
+
+## Skaffold
+- Install it: `brew install skaffold`
+- Make a `skaffold.yml` file:
+```yml
+apiVersion: skaffold/v2beta10
+kind: Config
+build:
+  local:
+    push: false
+  artifacts:
+    - image: criftinc/frontend
+      context: ../frontend
+      docker:
+        dockerfile: Dockerfile.dev
+      sync: 
+        infer: ["**/*.js"]
+deploy:
+  kubectl:
+    manifests:
+      - frontend-deployment.yml
+      - frontend-cluster-ip.yml  
+```
+- Start skaffold with: `skaffold dev`
+- https://skaffold.dev/docs/references/yaml/
