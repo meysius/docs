@@ -234,9 +234,9 @@ services:
 ## Kubernetes
 
 ### Install
+- Install hyperkit or skip if you already have docker desktop
 - `brew install minikube`
 - `brew install kubectl`
-- Install virtualbox
 - `minikube start`
 - `minikube status` or `kubectl cluster-info` to verify
 - `minikube ip` gives the ip of the cluster
