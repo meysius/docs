@@ -4,8 +4,7 @@
 - edit `~/.ssh/config`, add:
 ```
 # GitLab.com server
-Host gitlab.com
-RSAAuthentication yes
+Host github.com
 IdentityFile ~/.ssh/name_of_your_key
 ```
 
