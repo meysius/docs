@@ -25,3 +25,22 @@ PasswordAuthentication no
 
 finally do:
 `sudo systemctl restart ssh`
+
+
+# Boot using grub console
+```
+grub rescue> ls
+```
+find the one that contains `/boot/grub`
+```
+grub rescue> set prefix=(hd0,1)/boot/grub
+grub rescue> set root=(hd0,1)
+grub rescue> insmod linux
+grub rescue> insmod normal
+grub rescue> normal
+```
+when you os loaded, do:
+```
+update-grub
+sudo grub-install /dev/sda
+```
