@@ -173,6 +173,7 @@ services:
 ```
 - The two containers above are put on the same network.
 - The `node-app` container can access `redis-server` container using its name as a host name.
+- You can specify a docke-compose file using `-f docker-compose.test.yml`
 - `docker-compose up` will create all containers defined in compose file
 - `docker-compose up -d` will run all containers defined in bg
 - `docker-compose down` will stop all containers
