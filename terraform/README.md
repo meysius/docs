@@ -37,5 +37,5 @@ basic_auth_user = "admin"
 - There also is a `terraform state push` which can be used when statefile is out of sync. BE CAREFUL. running this is dangerous.
 - How to make an ECS cluster using terraform: 
   - Tutorial: https://testdriven.io/blog/deploying-django-to-ecs-with-terraform
-  - Code: https://github.com/testdrivenio/django-ecs-terraform/tree/master/terraform
+  - Code: see `ecs example` folder
 
