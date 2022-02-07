@@ -24,6 +24,12 @@ provider "aws" {
 $ export AWS_ACCESS_KEY_ID="anaccesskey"
 $ export AWS_SECRET_ACCESS_KEY="asecretkey"
 ```
+- You can break down your code into `.tf` files.
+- You can provide values for variables in `.tfvars` file: 
+```
+basic_auth_user = "admin"
+```
+- Terraform automatically loads `terraform.tfvars` or anuthing with extension `.auto.tfvars`
 - To setup your providers `terraform init`
 - To see what changes are pending run `terraform.plan`
 - To apply changes `terraform apply`
