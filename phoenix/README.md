@@ -343,27 +343,15 @@ end
 This view represents a cluster of templates in `web/templates/page`
 
 # Setting up email sending
-- Add `bamboo` and `bamboo_smtp` to your dependencies.
+- Add `bamboo` to your dependencies.
 - Add a mailer module to `_web/mailers/mailer.ex`
 ```elixir
 defmodule AppNameWeb.Mailer do
   use Bamboo.Mailer, otp_app: :app_name
 end
 ```
-- If you are using SES, verify two email address then create SMTP creds. 
-- Configure this mailer:
+- You can configure this mailer with something like:
 ```elixir
-# config for production
-config :app_name, AppNameWeb.Mailer,
-  adapter: Bamboo.SMTPAdapter,
-  server: "...",
-  port: ...,
-  username: ...,
-  password: ...,
-  tls: :if_available,
-  ssl: false,
-  retries: 1
-
 # development
 config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.LocalAdapter
@@ -377,6 +365,8 @@ end
 config :app_name, AppNameWeb.Mailer,
   adapter: Bamboo.TestAdapter
 ```
+- To set it up for production, either use a standard smtp adaptor (you will need to install `bamboo_smtp` dependency), or use your emailing service provider adaptor which uses that provider api to send emails. for SES it is: https://github.com/kalys/bamboo_ses
+- For SES, first verify an identity (preferably your domain) and then create an IAM user with access to SES.
 - Add layout files: `web/templates/layout/email.(html/text).eex`
 - To make a namespace of templates like `web/templates/email/*`, add view below in `web/views`
 ```elixir
