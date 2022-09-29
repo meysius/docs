@@ -1,0 +1,204 @@
+Amazon.txt
+
+1 - Customer Obsession
+  internal or external. Do not only focus on competitors. customer needs come first
+  always ask yourself: how does this affect customer. listen to them. and think about them regardless of if you are interacting with them.
+2 - Ownership
+  always solve problems for the long term instead of temporarily fixing for short term.
+  when there is a problem somewhere, an owner would volunteer to fix it
+  never say it is not my responsibility, you should always care even if you find a problem outside your area.
+  act as if the entire company is yours
+3 - Invent and Simplify
+  there is always ANOTHER way, you only have to invent it
+    never give up in answering questions, there ALWAYS other solutions
+  the simpler the better
+  question of what else? (go above and beyond to get new ideas)
+  when you have a radical idea get ready to face resistance. but have backbone and reason for your idea. listen to other so your ideas become stronger.
+  run it in pilot. and measure your sucess with metrics.
+4 - Are right alot
+  You are given lots of authority. and expected to have the best judgement and make best decisions
+  should never expect your manager to decide for you. gather data and make a decision yourself.
+  just move with your instinct BUT:
+  always question your own dicisions
+  be ready to listen to counter opinions and address other peoples feedback in your final decision.
+  part of this LP is to recognize and respond when you are wrong.
+5 - Learn and be curious
+  be open and interested to learn new things because everything changes so should you.
+  be flexible and always ready to learn new tech
+6 - Hire and develop (grow) the best
+  as an IC take advantage of learning opportunities to make your work more productive, efficient and fun. 
+  grow yourself. grow others. 
+  you should try to grow yourself and others and let poeople move throughout the company
+  try not to be comfortable, do things that scare you so you learn
+7 - Insist on highest standards
+  create high quality stuff but never think it is good enough and always try to make it even better.
+  make it even difficult for yourself to meet the high standards
+  make metrics and monitor to find out porblems sooner.
+  making high quality documentation is an example of this LP
+8 - Think Big
+  This is about thinking beyound the reality in front of you to achieve super ambicious goals.
+  when they ask anything else? never say "no thats it" continue untill they stop you.
+  go imaginative, never stop throwing ideas at them. dont worry about it being possible or not.
+  always think bigger that what is in front of your face, think of way way way in future. never stop.
+  they want you to throw fundamentally different ideas
+9 - Bias for action
+  lean more towards start doing stuff and making decisions fast instead of surveying and testing too much. option A or B? you dont know? just pick one and move on.
+  dont wait for managers to take action you should be able to take risks. 
+  This is also about jumping on fires fast to fix stuff for customers.
+  or volunteering to fix a problem that nobody is working on.
+10 - Frugality
+  provide as much value by spending as low as possible.
+  invent cheaper ways to do things. 
+  You never have all the resources you need to do your things.
+  you should know this is ok. and healthy. and it gives you the chance to invent ways to be more efficient.
+11 - Earn trust
+  listen carefully, speak frankly, respect others, when you made mistake, recognize it and quickly fix it then people trust you
+  be honest about your mistakes, doing what it takes to make them right and finally learn from them
+  When you’re explaining a mistake, first recognize your own, before explaining other people's misses
+  if someone had made an error you failed to notice it too.
+  try focusing on fixing problems for the long term. dont focus on short term incident
+
+12 - Dive Deep
+  you should always verify if things are correct, if not you should be able to get in and find out whats wrong
+  you should know the details of stories you tell because if you were a curious leader you cared enough to find out the details
+  this is about debugging something because you became curious (fixing memory leak)
+  go deep. asky why? until you find the issue.
+
+13 - Have backbone: Disagree and commit
+  your goal in the team is making the best decision. if you thing some part of a decision is wrong, disagree and explain yourself while being open to listen to others.
+  because my boss said so is not acceptable. you have to disagree and explain yourself. but once decision is made, you have to commit
+  and live with the decision and accept that you also were a part of that decision
+  never say "I told you so" because you must have presented your opinion with data before decision was made and the decision is the teams decision.
+
+14 - Deliver Results
+  This not about getting stuff done. it is about getting RIGHT stuff done.
+  deadlines are impoprtant. quality is important. its ok to miss dates but it should not become a thing.
+  when delivering, you should focus on how the result performs instead of if it is errorless.
+
+
+------------------------------------
+15 - Strive to be Earth's Best Employer
+  success is more important than social cohesion BUT:
+  leaders must recognize that they are working with other humans and have empathy
+  care about your employees. and care if they are happy and growing
+  even if they end up leaving, you should not stop helping them grow
+
+16 - Success and Scale Bring Broad Responsibility
+  we are big. our decision impact the world. and we are responsible.
+  we have to be careful about planet, and what we are doing to the world.
+  we have see past the business goals. and always do the right thing holistically
+  dont always focus on increasing profit
+
+
+1 - Customer stories
+Onboarding Avenue Living on Yardi Integration.
+  S: Managing leasing applications on Yuhu, but their accounting data on Yardi. Also had rentall and payment history on yardi.
+     We had a working POC for this integrations, on our QA instance. and they insisted to go live with the integration all at once.
+  T: Activate the yardi integration for them. their action in one system had to be broadcasted to the other system. 
+  A: pushed back on their request to go live immediately. worked for a few days on adding the ability to turn the integration on per property. so we can
+  run a pilot program. worked another few days on instrumenting the app with metrics to push status of diff of data on both sides to slack. ran on 1 property on 1 week.
+  at this point we went back to them and asked for feedback. they ended up complaining about how waiting for hours for data to appear in Yuhu was painful. we then came up with another
+  solution for pulling data on demand in addition to regualar hourly pulls. also with our monitoring in place, ended up finding out about a case where we did not push new prospects to 
+  Yardi when they came to system through reference. That was because that one was a different controller. then we fixed that. and ran next week on 4 additional properties.
+  R: After a month we had all their properties activated with the integration. we still had that diff monitoring report being sent to slack every 6 hours. 
+
+Onboarding boardwalk's work order data Async endpoints.
+  S: Big user base, millions of Service Requests. and our script for pulling data had not predicted this much volume of data. running the script took days to complete.
+  What did that script do?
+  T: I wanted to make it less painfull and more resistant against errors to pull that data. Also once I started running that script the system did not have to be interrupted.
+  A: Async
+  R: everything went to async job processor based on redis, we could monitor it. we found that ~7% where failing so we get to fix them one by one...
+
+2 - Ownership Stories
+  LONG TERM OVER SHORT TERM (DID SOMETHING SIGNIFICANT OUT OF RESPONSIBILITIES)
+    S: BannerTracking BQ uploads. Uploads clogged.
+    T: Fix the uploads. Send fixed batch size. (short term fix)
+    A: Wanted Auto Recovery (Async). Streamed data (long term fix). Had to learn Google BQ stream.
+    R: On peak times, the number of jobs grew rapidly and our db connection pool were clogged. then we increased and it became ok.
+  SAW A PEER STRUGGLING DECIDED TO STEP IN AND HELP
+    S: on-call. creating upload records to resume uploads.
+    T: I saw he was struggling.
+    A: I hopped on a call with him. shared my screen and showed him how he could fix the problem.
+    R: Later on we ended up fixing this issue for long term.
+
+3 - Insist on Higher Standards
+    UNSATISFIED WITH STATUS QUO. 
+    S: At yuhu pages took 2 to 10 seconds to load.
+    T: find out why? 
+    A: N+1 queries + loading the entire table at once in frontend. Used joins and eager loading to fix this.
+    R: Load times reduced to under 300ms.
+
+    SIGNIGICANT IMPROVEMENT YOU LEAD
+    S: Many EBS env for many clients
+    T: Make it easier to spin up new env for a new client.
+    A: used ECS and terraform (Infra as code)
+    R: Reduced error to 0 because no longer dony manually. Seperated out VPC for every client.
+
+    SEEK OUT FEEDBACK ON PERFORMANCE
+    S: Banner Tracking
+    T: make it
+    A: Met manager every week, review last week, plan next week.
+    R: I was always sure that my manager didnt hold any feedback for long.
+
+4 - Deliver Results
+  FIND OUT MORE THAN HALF WAY IN THAT YOUR GOAL THAT IT MAY NOT BE THE BEST GOAL
+  A GOAL THAT TOOK VERY LONG
+    Project Eagle. TOOK 1 YEAR TO COMPLETE. Accounting models where not needed.
+  A TIME YOU DELIVERED A PROJECT UNDER TIGHT DEADLINE
+    Motivate MD.
+
+5 - Are Right Alot
+  A TIME YOU MADE A DIFFICULT DECISION AND HOW YOU KNEW IT WAS RIGHT DECISION
+    choosing backend tech stack for aligno.
+  A TIME WHEN YOU HAD TO MAKE A DECISION WITHOUT DATA
+    choosing what database to use for BannerTracking
+  A TIME YOU MADE A BAD DECISION (MISTKAE) AND HOW YOU LEARNED FROM IT
+    synchronous import of data from yardi to Yuhu.
+
+6 - Bias for Action
+  CALCULATED RISK WHEN SPPED WAS CRUCIAL
+    choosing db for bannerTracking
+  MAKING AN IMPORTANT DECISION WITHOUT CONSULTING MANAGER
+    on-call, uploads where stuck on BannerTracking
+  A TIME WHERE YOU WERE ABLE TO REMOVE SERIOUS ROADBLOCKS PREVENTING PROGRESS
+
+7 - Invent and Simplify
+  THE MOST INNOVATIVE THING YOU HAVE DONE AND WHY YOU THINK IT IS INNOVATIVE
+  A TIME WHERE YOU SOLVED A COMPLEX PROBLEM WITH A SIMPLE SOLUTION
+  A CREATIVE IDEA YOU HAD THAT ENDED UP BEING DIFFICULT TO IMPLEMENT
+
+8 - DIVE DEEP
+  A specific metric you have used to identify a need for a change in your department 
+    SPECIAL PRINTS TO FIND N+1S
+  A time you linked two or more problems together an identified an underlying issue (Applications page was making it worse)
+  A time you were trying to understand a problem on your team and had to go down several layers to figure it out 
+    memory leak issue on yuhu
+
+9 - Learn and be curious
+  A time you realized you needed to have a deeper level of subject matter expertise to do your job well 
+    React hooks
+  A time you took on work outside of your comfort area and found it rewarding
+    SDK mobile on Jun group (load content of the ad after webview is visible)
+  A time you did not know what to do next or how to solve a challenging problem
+    Recover from upload incidents in BannerTracking
+  The coolest thing you have learned on your own that has helped you better perform your job
+
+10 - Disagree and commit
+  A time you strongly disagreed with your manager
+  A time you took an unpopular stance in a meeting with peers/leaders
+  A time you decided to go along with the group decision even if you disagreed 
+  A time when you submitted a good idea to your manager and he/she did not take action 
+  A time when you strongly disagreed with your manager on something you deemed very important the business 
+
+11 - Earn Trust
+  A time you significantly contributed to improving morale and productivity on your team 
+  3 things you’re working on to improve overall effectiveness 
+  A time you received tough or critical feedback 
+
+12 - Hire and develop the best
+  How you help your team members develop their careers
+  A time when you provided feedback to develop & leverage the strengths of someone on your team
+
+13 - Think Big
+  A time of a radical approach you proposed to solve a big problem
+  A time when you took a big risk and it failed
