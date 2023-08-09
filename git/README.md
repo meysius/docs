@@ -24,6 +24,15 @@ $ ssh -T git@git.toptal.com
 
 Enjoy pushing and pulling with ssh method.
 
+## Setting up git commiter user
+```
+git config --global user.name "Your Name"
+git config --global user.email "youremail@example.com"
+
+git config --global user.name    # Check the global name
+git config --global user.email   # Check the global email
+```
+
 ## Create a branch
 ```
 $ git checkout -b name from_branch
