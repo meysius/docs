@@ -25,6 +25,45 @@ a.slice(100000)
 
 // Injection:
 a.splice(i, delete_count, array_to_inject)
+
+// asc sort
+objects.sort((a, b) => a - b)
+
+// divisions geneerate floats. use Math.floor or Math.ceil for rounding
+5 / 2    // = 2.5
+
+
+// Class notation
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+
+  greet() {
+    console.log(`Hello, my name is ${this.name}.`);
+  }
+}
+```
+
+# Binary search
+```javascript
+const bsearch = (arr, target) => {
+  let i = 0, j = arr.length - 1;
+
+  while (i <= j) {
+    let mid = Math.floor((i + j) / 2)
+    const val = arr[mid]
+    if (target === val) {
+      return [true, mid]
+    } else if (target > val) {
+      i = mid + 1
+    } else {
+      j = mid - 1
+    }
+  }
+
+  return [false, i]
+}
 ```
 
 # Merging two sorted arrays
@@ -47,46 +86,47 @@ const merge = (nums1, nums2) => {
 ```
 
 
-class TrieNode
-  attr_accessor :children, :word
+# Prefix Tree (Trie)
+This tree is used for storing a set of strings:
+```
+        root
+         |
+        'c'
+         |
+        'a'
+       / | \
+     't' 'p' 'r'
+   (end) (end) (end)
+```
+- Each node of this tree represents a suffix and stores a map with keys being possible characters after this prefix and value of each key pointing to the child node for resulting prefix.
+- Each node could also have a boolean, denoting the end of a valid word.
+- This tree can be used to:
+  - Find out if a string is in a set?
+  - If any of prefixes of a string is in a set?
+  - Suggest autocomplete words existing in the set
 
-  def initialize
-      @children = {}
-  end
+```javascript
+class PrefixNode {
+  constructor(is_end_of_word) {
+    // keys are characters, value is a another PrefixNode
+    this.possible_children = {}
+    this.is_end_of_word = is_end_of_word
+  }
 
-  def add(w)
-      node = self
-      w.each_char do |c|
-          if node.children[c].nil?
-              node.children[c] = TrieNode.new
-          end
-          node = node.children[c]
-      end
-      node.word = w
-  end
-end
+  add(word) {
+    if (word.length === 0) return;
+    first_char = word[0]
+    rest = word.slice(1)
+    if (first_char in this.possible_children) {
+      child_node = this.possible_children[first_char]
+      child_node.add(rest)
+    } else {
+      this.possible_children[first_char] = new PrefixNode(rest.length === 0)
+    }
+  }
+}
+```
 
-BinarySearch
-def bsearch(nums, target)
-  first = 0
-  last = nums.length - 1
-  while first <= last
-    mid = (first + last) / 2
-    if nums[mid] == target
-      return [true, mid]
-    elsif nums[mid] < target
-      first = mid + 1
-    elsif nums[mid] > target
-      last = mid - 1
-    end
-  end
-
-  [false, first]
-end
-
-builtin: [].bsearch_index { |i| i >= 10 }
-
-ary.sort { |a, b| b <=> a }
 
 
 - Find closest less and greater elements on left and right of each element
