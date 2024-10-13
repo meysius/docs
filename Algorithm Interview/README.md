@@ -107,22 +107,20 @@ This tree is used for storing a set of strings:
 
 ```javascript
 class PrefixNode {
-  constructor(is_end_of_word) {
+  constructor() {
     // keys are characters, value is a another PrefixNode
-    this.possible_children = {}
-    this.is_end_of_word = is_end_of_word
+    this.children = {}
+    this.is_leaf = false
   }
 
   add(word) {
-    if (word.length === 0) return;
-    first_char = word[0]
-    rest = word.slice(1)
-    if (first_char in this.possible_children) {
-      child_node = this.possible_children[first_char]
-      child_node.add(rest)
-    } else {
-      this.possible_children[first_char] = new PrefixNode(rest.length === 0)
+    if (word.length === 0) {
+      this.is_leaf = true
+      return
     }
+    let first_char = word[0], rest = word.slice(1)
+    this.children[first_char] ||= new PrefixNode()
+    this.children[first_char].add(rest)
   }
 }
 ```
