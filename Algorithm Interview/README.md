@@ -1,6 +1,24 @@
 notes:
 
-Merging two sorted arrays
+Merging two sorted arrays:
+```javascript
+const merge = (nums1, nums2) => {
+  let i = 0, j = 0;
+  const col = []
+  while (i < nums1.length && j < nums2.length) {
+    if (nums1[i] < nums2[j]) {
+      col.push(nums1[i])
+      i += 1
+    } else {
+      col.push(nums2[j])
+      j += 1
+    }
+  }
+
+  return col.concat(nums1.slice(i)).concat(nums2.slice(j))
+}
+```
+
 def merge(nums1, nums2)
   i = 0
   j = 0
@@ -9,7 +27,7 @@ def merge(nums1, nums2)
       if j == nums2.length
           col << nums1[i]
           i += 1
-      elsif i == nums1.length 
+      elsif i == nums1.length
           col << nums2[j]
           j += 1
       elsif nums1[i] < nums2[j]
@@ -26,11 +44,11 @@ end
 
 class TrieNode
   attr_accessor :children, :word
-  
+
   def initialize
       @children = {}
   end
-  
+
   def add(w)
       node = self
       w.each_char do |c|
@@ -114,14 +132,14 @@ when the problem is about substrings of string or subarrays of array, the optimu
     the closes index at the right that the substring can end at where index i can contribute to the final answer: k
     (k - i) * (i - j)
 
-DP: 
+DP:
     think about if you can solve f(n) having all f(k) where k < n
 
 
 Differnet DFS traverse:
 Inorder: L Root R
   inorder of bst will return a sorted array
-Preorder: Root L R 
+Preorder: Root L R
   copying tree or make a prefix notation of a math expression
 Postorder: L R Root
   Deleting tree of make a postfix notation of a math expression
@@ -154,10 +172,10 @@ end
   dp[3] = ["cats"]
   dp[4] = []
   dp[5] = []
-  dp[6] = ["cat sand", "cats and"] 
+  dp[6] = ["cat sand", "cats and"]
 - merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
 - longest sub-array with positive product. split the original by 0, because 0 messes it up
-  dp[i] = 
+  dp[i] =
     if negs_so_far is even
       i + 1
     else
@@ -165,7 +183,7 @@ end
     end
 - min swap to group all ones together: a group of 1 with length n, use sliging window find the window with most ones.
  this will be the window you will need least swaps. answer is num of 0s in this window.
-- BFS is a shortest path algorithm. 
+- BFS is a shortest path algorithm.
 - BFS and DFS usually is written as you put the root of search in stack (DFS) or Queue(BFS), then you pop it and put its children
 - find shortest transformation sequence. use BFS
 - Trie Tree is very good to find if a string or any of its prefixes is in a set or not? it can help telling you stop the search because this string is not a prefix of any word.
@@ -173,13 +191,13 @@ end
 - Finding words in n*m grid of chars: DFS
 - You can use a sorted array and bsearch for min and max heap (or priority queue)
 - find max in sliding window: use double ended queue. always keep it DESC (pop from right if you have to). push to right of it. pop from left to throw away any index out of this sliding window.
-- Topological sort: 
-  DFS because you need to find the deepest dependency. the leaves of tree. 
+- Topological sort:
+  DFS because you need to find the deepest dependency. the leaves of tree.
   Use a stack. for each node: run dfs. when visiting nodes mark them Temporarily and go deep.
-  when you get to a dead end of no more ways to go, put in stack and mark permanently. 
+  when you get to a dead end of no more ways to go, put in stack and mark permanently.
   if you find a permanent mark during dfs its fine. if you find a temp mark its a cycle. dependancy loop
 - Priority Queue is good for when you want to pop a max and still have another max ready to pop or min (specially for problems where max and min of subarrays is concerned)
-- for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than 
+- for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
 that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
 from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
 - for problems about max and mins of subarrays, using min and max stack can help finding next_less prev_next index for each index and find longest sub-array (or all the subarrays) where each element is minimum in.
@@ -213,11 +231,11 @@ https://leetcode.com/problems/median-of-two-sorted-arrays
 https://leetcode.com/problems/gas-station/
     diffs and suffix sum
 https://leetcode.com/problems/design-an-expression-tree-with-evaluate-function/
-    having postfix, start from the end. if you see operator, push to stack, if you see number, 
-    attach it as the missing child of operator at top of stack. if the operator has both its 
+    having postfix, start from the end. if you see operator, push to stack, if you see number,
+    attach it as the missing child of operator at top of stack. if the operator has both its
     left and right children, continue attaching this to the next element in stack.
 https://leetcode.com/problems/build-binary-expression-tree-from-infix-expression
-    having the expression string, start from beginning. if you see number push it to stack. if you see 
+    having the expression string, start from beginning. if you see number push it to stack. if you see
     + or - you must try to attach all nodes in stack (or up until '(') so far as its left child.
     if you see * or / you must attach the top of stack as left child. if you see open paranthesis push it to stack
     and when you see close paranthesis, build entire sub tree in stack up until open par, pop open par and push the sbtree to stack.
@@ -245,7 +263,7 @@ https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree
   find path from root to p and q, return the last equal node in the prefixes of these paths:
   [1, 2, 3], [1, 2, 5] => 2
 https://leetcode.com/problems/longest-substring-without-repeating-characters
-  use a map to keep latest index of every char and use 2 pointers 
+  use a map to keep latest index of every char and use 2 pointers
 https://leetcode.com/problems/container-with-most-water
   Greedy. sort and keep poping maxes. every time, if the max expands the window, update window start and end index and see if max changes
 https://leetcode.com/problems/3sum
