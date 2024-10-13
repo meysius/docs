@@ -1,6 +1,33 @@
-notes:
+# Basics
+```javascript
+let a = [1, 2, 3]
 
-Merging two sorted arrays:
+// from i to j not including j itself. meaining a.slice(i, i) will be []
+a.slice(i, j)
+
+// get 2 elements starting from i, if not enough elements, get all of them up to the end.
+// meaning the second element can go out of range.
+a.slice(i, i + 2)
+
+// from i to end
+a.slice(i)
+a.slice(i, a.length)
+
+// from i to end, except the last n elements
+a.slice(i, a.length - n)
+
+// n last elements
+a.slice(-n)
+
+// this is allowed and will return []
+a.slice(100000)
+
+
+// Injection:
+a.splice(i, delete_count, array_to_inject)
+```
+
+# Merging two sorted arrays
 ```javascript
 const merge = (nums1, nums2) => {
   let i = 0, j = 0;
@@ -15,32 +42,10 @@ const merge = (nums1, nums2) => {
     }
   }
 
-  return col.concat(nums1.slice(i)).concat(nums2.slice(j))
+  return [...col, ...nums1.slice(i), ...nums2.slice(j)]
 }
 ```
 
-def merge(nums1, nums2)
-  i = 0
-  j = 0
-  col = []
-  while i < nums1.length || j < nums2.length
-      if j == nums2.length
-          col << nums1[i]
-          i += 1
-      elsif i == nums1.length
-          col << nums2[j]
-          j += 1
-      elsif nums1[i] < nums2[j]
-          col << nums1[i]
-          i += 1
-      elsif nums1[i] >= nums2[j]
-          col << nums2[j]
-          j += 1
-      end
-  end
-
-  col
-end
 
 class TrieNode
   attr_accessor :children, :word
