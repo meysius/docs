@@ -134,7 +134,7 @@ class PrefixNode {
 // We are looking for     [ -1, -1,  1,  2,  1,  4]
 
 function topOf(stack) {
-  return stack.slice(-1).pop()
+  return stack[stack.length - 1]
 }
 
 function closestLessOnLeft(nums) {
@@ -170,31 +170,52 @@ function closestLessOnRight(nums) {
 }
 ```
 
-max_stack = []
-prev_greater = Array.new(nums.length, -1)
-for i in 0..(nums.length - 1)
-    while max_stack.length > 0 && nums[max_stack.last] <= nums[i]
-        max_stack.pop
-    end
-    prev_greater[i] = max_stack.last || -1
-    max_stack << i
-end
+- For each element in the array nums, find the index of the closest element on the left (if any) that is greater than the current element. If no such element exists, store -1.
 
-max_stack = []
-next_greater = Array.new(nums.length, nums.length)
-for i in 0..(nums.length - 1)
-    while max_stack.length > 0 && nums[max_stack.last] < nums[i]
-        next_greater[max_stack.pop] = i
-    end
-    max_stack << i
-end
+```javascript
+// For example for nums = [  2,  1,  5,  6,  2,  3]
+// We are looking for     [ -1,  0, -1, -1,  3,  3]
+
+function closestGreaterOnLeft(nums) {
+  const result = Array(nums.length).fill(-1)
+  const descStack = []
+  for (let i = 0; i < nums.length; i++) {
+    while (descStack.length > 0 && nums[topOf(descStack)] <= nums[i]) {
+      descStack.pop()
+    }
+    result[i] = descStack.length > 0 ? topOf(descStack) : -1
+    descStack.push(i)
+  }
+  return result
+}
+```
+
+- For each element in the array nums, find the index of the closest element on the right that is less than the current element. If no such element exists, store `nums.length`.
+
+```javascript
+// For example for nums = [  2,  1,  5,  6,  2,  3]
+// We are looking for     [  2,  2,  3,  6,  5,  6]
+
+function closestGreaterOnRight(nums) {
+  const result = Array(nums.length).fill(nums.length)
+  const descStack = []
+  for (let i = 0; i < nums.length; i++) {
+    while (descStack.length > 0 && nums[topOf(descStack)] < nums[i]) {
+      result[descStack.pop()] = i
+    }
+    descStack.push(i)
+  }
+  return result
+}
+```
 
 
-asc_min_stack and desc_max_stack is the solution for fiding min o max for subarrays of array
-when the problem is about substrings of string or subarrays of array, the optimum solution will be like:
+- ascStack and descStack is the solution for fiding min o max for subarrays of array
+- when the problem is about substrings of string or subarrays of array, the optimum solution will be like:
   for each index i, it may contribute to the final answer in x substrings:
     the closest index at the left that the substring can start from where index i can contribute to final answer: j
     the closes index at the right that the substring can end at where index i can contribute to the final answer: k
+    indexes: j ----  i ---- k
     (k - i) * (i - j)
 
 DP:
