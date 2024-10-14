@@ -125,19 +125,30 @@ class PrefixNode {
 }
 ```
 
+# Finding closest smaller element on the left side of each element
+For each element in the array nums, find the index of the closest element on the left (if any) that is smaller than the current element. If no such element exists, store -1.
 
+For example for nums = [2, 1, 5, 6, 2, 3]
+We are looking for [-1, -1, 1, 2, 1, 4]
 
-- Find closest less and greater elements on left and right of each element
+```javascript
+function topOf(stack) {
+  return stack.slice(-1).pop()
+}
 
-prev_less = Array.new(nums.length, -1)
-min_stack = []
-for i in 0..nums.length - 1
-  while min_stack.length > 0 && nums[min_stack.last] >= nums[i]
-      min_stack.pop()
-  end
-  prev_less[i] = min_stack.last || -1
-  min_stack << i
-end
+function closestSmallerOnLeft(nums) {
+  const result = Array(nums.length).fill(-1)
+  const ascStack = []
+  for (let i = 0; i < nums.length; i++) {
+    while (ascStack.length > 0 && nums[topOf(ascStack)] >= nums[i]) {
+      ascStack.pop()
+    }
+    result[i] = topOf(ascStack) || -1
+    minStack.push(i)
+  }
+  return result
+}
+```
 
 next_less = Array.new(nums.length, nums.length)
 min_stack = []
@@ -191,15 +202,6 @@ Postorder: L R Root
 Prefix notation: + 4 5 (doesnt need paranthesis as long as operators take fixed num of operands)
 Infix  notation: 4 + 5 (requires parathensis)
 Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed num of operands)
-
-
-class Point
-  attr_accessor :x, :y
-  def initialize(x, y)
-    @x = x
-    @y = y
-  end
-end
 
 
 - find number of islands in 2d array or 1 and 0: DFS and set 0 when visit
