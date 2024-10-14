@@ -125,18 +125,19 @@ class PrefixNode {
 }
 ```
 
-# Finding closest smaller element on the left side of each element
-For each element in the array nums, find the index of the closest element on the left (if any) that is smaller than the current element. If no such element exists, store -1.
+# Finding closest less or greater indexes
 
-For example for nums = [2, 1, 5, 6, 2, 3]
-We are looking for [-1, -1, 1, 2, 1, 4]
+- For each element in the array nums, find the index of the closest element on the left (if any) that is less than the current element. If no such element exists, store -1.
 
 ```javascript
+// For example for nums = [  2,  1,  5,  6,  2,  3]
+// We are looking for     [ -1, -1,  1,  2,  1,  4]
+
 function topOf(stack) {
   return stack.slice(-1).pop()
 }
 
-function closestSmallerOnLeft(nums) {
+function closestLessOnLeft(nums) {
   const result = Array(nums.length).fill(-1)
   const ascStack = []
   for (let i = 0; i < nums.length; i++) {
@@ -144,20 +145,30 @@ function closestSmallerOnLeft(nums) {
       ascStack.pop()
     }
     result[i] = topOf(ascStack) || -1
-    minStack.push(i)
+    ascStack.push(i)
   }
   return result
 }
 ```
 
-next_less = Array.new(nums.length, nums.length)
-min_stack = []
-for i in 0..(nums.length - 1)
-    while min_stack.length > 0 && nums[min_stack.last] > nums[i]
-        next_less[min_stack.pop] = i
-    end
-    min_stack << i
-end
+- For each element in the array nums, find the index of the closest element on the right that is less than the current element. If no such element exists, store `nums.length`.
+
+```javascript
+// For example for nums = [  2,  1,  5,  6,  2,  3]
+// We are looking for     [  1,  6,  4,  4,  6,  6]
+
+function closestLessOnRight(nums) {
+  const result = Array(nums.length).fill(nums.length)
+  const ascStack = []
+  for (let i = 0; i < nums.length; i++) {
+    while (ascStack.length > 0 && nums[topOf(ascStack)] > nums[i]) {
+      result[ascStack.pop()] = i
+    }
+    ascStack.push(i)
+  }
+  return result
+}
+```
 
 max_stack = []
 prev_greater = Array.new(nums.length, -1)
