@@ -133,19 +133,19 @@ class PrefixNode {
 // For example for nums = [  2,  1,  5,  6,  2,  3]
 // We are looking for     [ -1, -1,  1,  2,  1,  4]
 
-function topOf(stack) {
+function top(stack) {
   return stack[stack.length - 1]
 }
 
-function closestLessOnLeft(nums) {
+function lessLeft(nums) {
   const result = Array(nums.length).fill(-1)
-  const ascStack = []
+  const stack = []  // this will be ascending stack. => popping every time, you will reach an index with less value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
-    while (ascStack.length > 0 && nums[topOf(ascStack)] >= nums[i]) {
-      ascStack.pop()
+    while (stack.length > 0 && nums[top(stack)] >= nums[i]) {
+      stack.pop()
     }
-    result[i] = topOf(ascStack) || -1
-    ascStack.push(i)
+    result[i] = top(stack) || -1
+    stack.push(i)
   }
   return result
 }
@@ -157,14 +157,14 @@ function closestLessOnLeft(nums) {
 // For example for nums = [  2,  1,  5,  6,  2,  3]
 // We are looking for     [  1,  6,  4,  4,  6,  6]
 
-function closestLessOnRight(nums) {
+function lessRight(nums) {
   const result = Array(nums.length).fill(nums.length)
-  const ascStack = []
+  const stack = [] // this will be ascending stack. => popping every time, you will reach an index with less value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
-    while (ascStack.length > 0 && nums[topOf(ascStack)] > nums[i]) {
-      result[ascStack.pop()] = i
+    while (stack.length > 0 && nums[top(stack)] > nums[i]) {
+      result[stack.pop()] = i
     }
-    ascStack.push(i)
+    stack.push(i)
   }
   return result
 }
@@ -176,47 +176,53 @@ function closestLessOnRight(nums) {
 // For example for nums = [  2,  1,  5,  6,  2,  3]
 // We are looking for     [ -1,  0, -1, -1,  3,  3]
 
-function closestGreaterOnLeft(nums) {
+function greaterLeft(nums) {
   const result = Array(nums.length).fill(-1)
-  const descStack = []
+  const stack = [] // this will be descending stack. => popping every time, you will reach an index with greater value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
-    while (descStack.length > 0 && nums[topOf(descStack)] <= nums[i]) {
-      descStack.pop()
+    while (stack.length > 0 && nums[top(stack)] <= nums[i]) {
+      stack.pop()
     }
-    result[i] = descStack.length > 0 ? topOf(descStack) : -1
-    descStack.push(i)
+    result[i] = stack.length > 0 ? top(stack) : -1
+    stack.push(i)
   }
   return result
 }
 ```
 
-- For each element in the array nums, find the index of the closest element on the right that is less than the current element. If no such element exists, store `nums.length`.
+- For each element in the array nums, find the index of the closest element on the right that is greater than the current element. If no such element exists, store `nums.length`.
 
 ```javascript
 // For example for nums = [  2,  1,  5,  6,  2,  3]
 // We are looking for     [  2,  2,  3,  6,  5,  6]
 
-function closestGreaterOnRight(nums) {
+function greaterRight(nums) {
   const result = Array(nums.length).fill(nums.length)
-  const descStack = []
+  const stack = [] // this will be descending stack. => popping every time, you will reach an index with greater value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
-    while (descStack.length > 0 && nums[topOf(descStack)] < nums[i]) {
-      result[descStack.pop()] = i
+    while (stack.length > 0 && nums[top(stack)] < nums[i]) {
+      result[stack.pop()] = i
     }
-    descStack.push(i)
+    stack.push(i)
   }
   return result
 }
 ```
 
+### Example questions
+**Example 1.** Given array nums, find the sum of minimums or maximums of all subarrays of nums.
+```
+Solution:
+for i in nums:
+  sum += (number of subarrays in which nums[i] is min or max in that subarray) * nums[i]
 
-- ascStack and descStack is the solution for fiding min o max for subarrays of array
-- when the problem is about substrings of string or subarrays of array, the optimum solution will be like:
-  for each index i, it may contribute to the final answer in x substrings:
-    the closest index at the left that the substring can start from where index i can contribute to final answer: j
-    the closes index at the right that the substring can end at where index i can contribute to the final answer: k
-    indexes: j ----  i ---- k
-    (k - i) * (i - j)
+If we find the longest subarray of nums (from j to k) in which nums[i] is min or max:
+  j --- i --- k
+Then start index could be any index from j to i and end index could be any index from i to k.
+Therefore we have this many: (i - j) * (k - i)
+```
+
+**Example 2.** https://leetcode.com/problems/sum-of-subarray-ranges/
 
 DP:
     think about if you can solve f(n) having all f(k) where k < n

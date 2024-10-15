@@ -3,11 +3,11 @@ function top(stack) {
   return stack[stack.length - 1]
 }
 
-function closestLessOnLeft(nums) {
+function lessLeft(nums) {
   const result = Array(nums.length).fill(-1)
   const stack = []
   for (let i = 0; i < nums.length; i++) {
-    while (stack.length > 0 && nums[top(stack)] >= nums[i]) {
+    while (stack.length > 0 && nums[top(stack)] > nums[i]) {
       stack.pop()
     }
     result[i] = stack.length > 0 ? top(stack) : -1
@@ -17,7 +17,7 @@ function closestLessOnLeft(nums) {
   return result
 }
 
-function closestLessOnRight(nums) {
+function lessRight(nums) {
   const result = Array(nums.length).fill(nums.length)
   const stack = []
   for (let i = 0; i < nums.length; i++) {
@@ -30,11 +30,11 @@ function closestLessOnRight(nums) {
 }
 
 
-function closestGreaterOnLeft(nums) {
+function greaterLeft(nums) {
   const result = Array(nums.length).fill(-1)
   const stack = []
   for (let i = 0; i < nums.length; i++) {
-    while(stack.length > 0 && nums[top(stack)] <= nums[i]) {
+    while(stack.length > 0 && nums[top(stack)] < nums[i]) {
       stack.pop()
     }
     result[i] = stack.length > 0 ? top(stack) : -1
@@ -43,7 +43,7 @@ function closestGreaterOnLeft(nums) {
   return result
 }
 
-function closestGreaterOnRight(nums) {
+function greaterRight(nums) {
   result = Array(nums.length).fill(nums.length)
   stack = []
   for (let i = 0; i < nums.length; i++) {
@@ -73,25 +73,55 @@ function test(func, input, expect) {
 }
 
 test(
-  closestLessOnLeft,
+  lessLeft,
   [  2,  1,  5,  6,  2,  3],
   [ -1, -1,  1,  2,  1,  4]
 )
 
 test(
-  closestLessOnRight,
+  lessRight,
   [  2,  1,  5,  6,  2,  3],
   [  1,  6,  4,  4,  6,  6]
 )
 
 test(
-  closestGreaterOnLeft,
+  greaterLeft,
   [  2,  1,  5,  6,  2,  3],
   [ -1,  0, -1, -1,  3,  3]
 )
 
 test(
-  closestGreaterOnRight,
+  greaterRight,
   [  2,  1,  5,  6,  2,  3],
   [  2,  2,  3,  6,  5,  6]
+)
+
+function solve(nums) {
+  let min_sum = 0
+  let max_sum = 0
+  let lessL = lessLeft(nums)
+  let lessR = lessRight(nums)
+  let greaterL = greaterLeft(nums)
+  let greaterR = greaterRight(nums)
+
+  console.log(lessL)
+  console.log(lessR)
+  console.log(greaterL)
+  console.log(greaterR)
+  for (let i = 0; i < nums.length; i++) {
+    let minStart = lessL[i], minEnd = lessR[i]
+    min_sum += ((i - minStart) * (minEnd - i)) * nums[i]
+
+
+    let maxStart = greaterL[i], maxEnd = greaterR[i]
+    max_sum += ((i - maxStart) * (maxEnd - i)) * nums[i]
+  }
+
+  return max_sum - min_sum
+}
+
+console.log(
+  solve(
+    [1,3,3]
+  )
 )
