@@ -231,14 +231,24 @@ Sum of all (max - min) = sum of all max - sum of all mins
 # Dynamic programming
 Think about if you can solve f(n) using a function of all or some f(k) where k < n.
 
-**Example 1.**
-- longest sub-array with positive product. split the original by 0, because 0 messes it up
+**Example 1.** Given an array of integers nums, find the maximum length of a subarray where the product of all its elements is positive.
+```
+For example: 
+nums = [1,-2,-3,4]    => return 4
+nums = [0,1,-2,-3,-4] => return 3
+nums = [-1,-2,-3,0,1] => return 2
+```
+
+```
+Solution: (tobe cleaned up)
+split the original by 0, because 0 messes it up
   dp[i] =
     if negs_so_far is even
       i + 1
     else
       max[dp[i - 1], substring(firstneg..i).length]
     end
+```
 
 **Example 2.**
 - given a word and a list of dict words, find out if you can construct the word using dict words
