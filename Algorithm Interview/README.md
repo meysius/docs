@@ -220,13 +220,13 @@ If we find the longest subarray of nums (from j to k) in which nums[i] is min or
 Then start index could be any index from j to i and end index could be any index from i to k.
 Therefore we have this many: (i - j) * (k - i)
 ```
-- https://leetcode.com/problems/sum-of-subarray-minimums/
+Ref: https://leetcode.com/problems/sum-of-subarray-minimums/
 
 **Example 2.** Find sum of (max - min) of all subarrays of array nums
 ```
 Sum of all (max - min) = sum of all max - sum of all mins
 ```
-- https://leetcode.com/problems/sum-of-subarray-ranges/
+Ref: https://leetcode.com/problems/sum-of-subarray-ranges/
 
 # Dynamic programming
 Think about if you can solve f(n) using a function of all or some f(k) where k < n.
@@ -249,10 +249,19 @@ split the original by 0, because 0 messes it up
       max[dp[i - 1], substring(firstneg..i).length]
     end
 ```
+Ref: https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/description/
 
-**Example 2.**
-- given a word and a list of dict words, find out if you can construct the word using dict words
-  sol 1: dp: f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
+**Example 2.** Given a word and a list of dict words, return true if word can be constructed using words in the dict.
+```
+s = "leetcode", wordDict = ["leet","code"] => true
+s = "applepenapple", wordDict = ["apple","pen"] => true (you can reuse the words many times)
+s = "catsandog", wordDict = ["cats","dog","sand","and","cat"] => false
+```
+```
+Solution:
+f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
+```
+Ref: https://leetcode.com/problems/word-break/description/
 
 **Example 3.**
 - given a word and a list of dict words, find out all different combination of dict words which construct the word
