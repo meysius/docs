@@ -240,6 +240,13 @@ nums = [-1,-2,-3,0,1] => return 2
 ```
 
 ```
+Solution:
+The longest subarray with positive product has no zeros in it and the number of negatives are even.
+So lets split by 0 first. We will solve the problem for the segments in between and take a max.
+Assuming we have no zeros, if the array has even number of zeros, the solution is the length of the array.
+So we are only left with a case where number of negatives is odd.
+
+
 Solution: (tobe cleaned up)
 split the original by 0, because 0 messes it up
   dp[i] =
