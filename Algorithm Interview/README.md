@@ -228,11 +228,39 @@ Sum of all (max - min) = sum of all max - sum of all mins
 ```
 - https://leetcode.com/problems/sum-of-subarray-ranges/
 
+# Dynamic programming
+Think about if you can solve f(n) using a function of all or some f(k) where k < n.
 
+**Example 1.**
+- longest sub-array with positive product. split the original by 0, because 0 messes it up
+  dp[i] =
+    if negs_so_far is even
+      i + 1
+    else
+      max[dp[i - 1], substring(firstneg..i).length]
+    end
 
-DP:
-    think about if you can solve f(n) having all f(k) where k < n
+**Example 2.**
+- given a word and a list of dict words, find out if you can construct the word using dict words
+  sol 1: dp: f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
 
+**Example 3.**
+- given a word and a list of dict words, find out all different combination of dict words which construct the word
+  this is dp:
+  catsanddog, cat, cats, dog, and, sand
+  dp[0] = []
+  dp[1] = []
+  dp[2] = ["cat"]
+  dp[3] = ["cats"]
+  dp[4] = []
+  dp[5] = []
+  dp[6] = ["cat sand", "cats and"]
+
+**Example 4.** https://leetcode.com/problems/concatenated-words/
+
+**Example 5.** https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/
+
+**Exampl 6.** https://leetcode.com/problems/word-break/
 
 Differnet DFS traverse:
 Inorder: L Root R
@@ -252,24 +280,8 @@ Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed
 - given a word and a list of dict words, find out if you can construct the word using dict words
   sol 1: dp: f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
   sol 2: dfs: use a stack to store unmatched reminder of strings. pop and find if there is a dict word it starts with. put reminder in stack.
-- given a word and a list of dict words, find out all different combination of dict words which construct the word
-  this is dp:
-  catsanddog, cat, cats, dog, and, sand
-  dp[0] = []
-  dp[1] = []
-  dp[2] = ["cat"]
-  dp[3] = ["cats"]
-  dp[4] = []
-  dp[5] = []
-  dp[6] = ["cat sand", "cats and"]
 - merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
-- longest sub-array with positive product. split the original by 0, because 0 messes it up
-  dp[i] =
-    if negs_so_far is even
-      i + 1
-    else
-      max[dp[i - 1], substring(firstneg..i).length]
-    end
+
 - min swap to group all ones together: a group of 1 with length n, use sliging window find the window with most ones.
  this will be the window you will need least swaps. answer is num of 0s in this window.
 - BFS is a shortest path algorithm.
@@ -292,10 +304,6 @@ from the left and push element to the right maintaining the DESC order. so pop f
 - Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
 
 Good Problems
-https://leetcode.com/problems/concatenated-words/
-    DP
-https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/
-    DP
 https://leetcode.com/problems/range-addition/
     Another version of merging intervals
 https://leetcode.com/problems/sliding-window-maximum/
