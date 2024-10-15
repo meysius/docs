@@ -212,7 +212,6 @@ function greaterRight(nums) {
 ### Example questions
 **Example 1.** Given array nums, find the sum of minimums or maximums of all subarrays of nums.
 ```
-Solution:
 for i in nums:
   sum += (number of subarrays in which nums[i] is min or max in that subarray) * nums[i]
 
@@ -221,8 +220,15 @@ If we find the longest subarray of nums (from j to k) in which nums[i] is min or
 Then start index could be any index from j to i and end index could be any index from i to k.
 Therefore we have this many: (i - j) * (k - i)
 ```
+- https://leetcode.com/problems/sum-of-subarray-minimums/
 
-**Example 2.** https://leetcode.com/problems/sum-of-subarray-ranges/
+**Example 2.** Find sum of (max - min) of all subarrays of array nums
+```
+Sum of all (max - min) = sum of all max - sum of all mins
+```
+- https://leetcode.com/problems/sum-of-subarray-ranges/
+
+
 
 DP:
     think about if you can solve f(n) having all f(k) where k < n
@@ -283,13 +289,9 @@ Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed
 - for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
 that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
 from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
-- for problems about max and mins of subarrays, using min and max stack can help finding next_less prev_next index for each index and find longest sub-array (or all the subarrays) where each element is minimum in.
-similarly you can use prev_greater and next_greater to find out subarrays where that element is maximum in. This particularly helpful in problems whose answers are dependent to all the subarrays in which element x is max or min in.
 - Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
 
 Good Problems
-https://leetcode.com/problems/sum-of-subarray-ranges/
-    prev_less next_less prev_greater and next_greater
 https://leetcode.com/problems/concatenated-words/
     DP
 https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/
