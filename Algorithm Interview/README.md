@@ -229,11 +229,14 @@ Sum of all (max - min) = sum of all max - sum of all mins
 Ref: https://leetcode.com/problems/sum-of-subarray-ranges/
 
 # Dynamic programming
-Think about if you can solve f(n) using a function of all or some f(k) where k < n.
+To check if problem p(n) (with input size n) has a DP solution, assume you knew the answer to p(n - 1), p(n - 2), ...
+which is the same exact problem expect with one (or more) element dropped from the tail of the input.
+This is only adding one more element. can you use all the answers of p(n - 1), p(n - 2), ... to answer p(n)?
+
 
 **Example 1.** Given an array of integers nums, find the maximum length of a subarray where the product of all its elements is positive.
 ```
-For example: 
+For example:
 nums = [1,-2,-3,4]    => return 4
 nums = [0,1,-2,-3,-4] => return 3
 nums = [-1,-2,-3,0,1] => return 2
@@ -243,50 +246,50 @@ nums = [-1,-2,-3,0,1] => return 2
 Solution:
 The longest subarray with positive product has no zeros in it and the number of negatives are even.
 So lets split by 0 first. We will solve the problem for the segments in between and take a max.
-Assuming we have no zeros, if the array has even number of zeros, the solution is the length of the array.
-So we are only left with a case where number of negatives is odd.
 
+Assuming we have no zeros, if the array has even number of negatives, the answer is the length of the array.
+That leaves us with only the case where the number of negatives is odd.
 
-Solution: (tobe cleaned up)
-split the original by 0, because 0 messes it up
-  dp[i] =
-    if negs_so_far is even
-      i + 1
-    else
-      max[dp[i - 1], substring(firstneg..i).length]
-    end
+Now we think if we can use DP:
+Lets say the input is [a, b, c, d, e]
+Let assume I know the answer for [a, b, c, d]. If I add e, either:
+  - e is not going to be in the longest subarray -> then the longest subarray is same as answer of [a, b, c, d] or p(n - 1)
+  - or e will be included in the longest subarray. -> which means the answer is: index_of_first_negative + 1 all the way to the end
+  whichever is higher.
 ```
 Ref: https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/description/
 
 **Example 2.** Given a word and a list of dict words, return true if word can be constructed using words in the dict.
 ```
-s = "leetcode", wordDict = ["leet","code"] => true
-s = "applepenapple", wordDict = ["apple","pen"] => true (you can reuse the words many times)
-s = "catsandog", wordDict = ["cats","dog","sand","and","cat"] => false
+s = "leetcode", dict = ["leet","code"] => true
+s = "applepenapple", dict = ["apple","pen"] => true (you can reuse the words many times)
+s = "catsandog", dict = ["cats","dog","sand","and","cat"] => false
 ```
+
 ```
 Solution:
-f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
+DP check:
+Lets say the input is "abcde"
+Lets assume I know the answers for:
+"abcd" => false
+"abc"  => true
+"ab"   => false
+"a"    => false
+
+The only way adding e returns true is the the dict contains either: "abcde" or "de".
 ```
-Ref: https://leetcode.com/problems/word-break/description/
+Ref: https://leetcode.com/problems/word-break
 
 **Example 3.**
-- given a word and a list of dict words, find out all different combination of dict words which construct the word
-  this is dp:
-  catsanddog, cat, cats, dog, and, sand
-  dp[0] = []
-  dp[1] = []
-  dp[2] = ["cat"]
-  dp[3] = ["cats"]
-  dp[4] = []
-  dp[5] = []
-  dp[6] = ["cat sand", "cats and"]
+Given a string s and a dictionary of words, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in any order.
+```
+"catsanddog", words = ["cat","cats","and","sand","dog"]
+Answer: ["cats and dog","cat sand dog"]
+```
+Ref: https://leetcode.com/problems/word-break-ii
 
 **Example 4.** https://leetcode.com/problems/concatenated-words/
 
-**Example 5.** https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/
-
-**Exampl 6.** https://leetcode.com/problems/word-break/
 
 Differnet DFS traverse:
 Inorder: L Root R
