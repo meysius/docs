@@ -257,7 +257,7 @@ Let assume I know the answer for [a, b, c, d]. If I add e, either:
   - or e will be included in the longest subarray. -> which means the answer is: index_of_first_negative + 1 all the way to the end
   whichever is higher.
 ```
-Ref: https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product/description/
+Ref: https://leetcode.com/problems/maximum-length-of-subarray-with-positive-product
 
 **Example 2.** Given a word and a list of dict words, return true if word can be constructed using words in the dict.
 ```
@@ -288,7 +288,8 @@ Answer: ["cats and dog","cat sand dog"]
 ```
 Ref: https://leetcode.com/problems/word-break-ii
 
-**Example 4.** https://leetcode.com/problems/concatenated-words/
+**Example 4.**
+Ref: https://leetcode.com/problems/concatenated-words/
 
 
 Differnet DFS traverse:
