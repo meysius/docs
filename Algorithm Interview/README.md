@@ -4,6 +4,8 @@ let a = [1, 2, 3]
 
 // from i to j not including j itself. meaining a.slice(i, i) will be []
 a.slice(i, j)
+// or for strings:
+"abcdef".substring(i, j)
 
 // get 2 elements starting from i, if not enough elements, get all of them up to the end.
 // meaning the second element can go out of range.
@@ -270,13 +272,19 @@ s = "catsandog", dict = ["cats","dog","sand","and","cat"] => false
 Solution:
 DP check:
 Lets say the input is "abcde"
-Lets assume I know the answers for:
-"abcd" => false
-"abc"  => true
-"ab"   => false
-"a"    => false
+Lets assume I know the answers for all cases where one (or more) element dropped from the tail of the input:
+s = "a"     => false
+s = "ab"    => false
+s = "abc"   => true
+s = "abcd"  => false
 
-The only way adding e returns true is the the dict contains either: "abcde" or "de".
+Now, Can we find the answer for s = "abcde" using all the above answers?
+There are two possibilities:
+1. "abcde" itself is a dict word
+2. "abcde" can be broken into dict words, is if one of the dict words matches a suffix of "abcde".
+which means you should find a case where: "abcde" can be broken into two parts: multiple_words_prefix + one_word_suffix.
+the multiple_words_prefix part can only be either one of the previous inputs with answer "true". if I can only find one
+whose suffix is a one word that exists in the dict then the answer for "abcde" is true.
 ```
 Ref: https://leetcode.com/problems/word-break
 
@@ -286,32 +294,50 @@ Given a string s and a dictionary of words, add spaces in s to construct a sente
 "catsanddog", words = ["cat","cats","and","sand","dog"]
 Answer: ["cats and dog","cat sand dog"]
 ```
+
+```
+Solution:
+
+The solution here is exactly like previous problem except, the answer is all possible compositions instead of true/false. so instead of breaking the loop as soon as you find a previous s that satisfies the condition described earlier,
+you want to check all of them and return the composition for each.
+```
+
 Ref: https://leetcode.com/problems/word-break-ii
 
 **Example 4.**
 Ref: https://leetcode.com/problems/concatenated-words/
+```
+Solution:
+Exactly similar to problem 2, except you sort and start from index 1, and try to use wordDict: 0..i
+```
 
-
-Differnet DFS traverse:
-Inorder: L Root R
+# Differnet DFS traverse
+## Inorder: L Root R
   inorder of bst will return a sorted array
-Preorder: Root L R
+## Preorder: Root L R
   copying tree or make a prefix notation of a math expression
-Postorder: L R Root
+## Postorder: L R Root
   Deleting tree of make a postfix notation of a math expression
 
-  Math expression notations:
-Prefix notation: + 4 5 (doesnt need paranthesis as long as operators take fixed num of operands)
-Infix  notation: 4 + 5 (requires parathensis)
-Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed num of operands)
+### Math expression notations:
+- Prefix notation: + 4 5 (doesnt need paranthesis as long as operators take fixed num of operands)
+- Infix  notation: 4 + 5 (requires parathensis)
+- Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed num of operands)
 
+- https://leetcode.com/problems/course-schedule
+- https://leetcode.com/problems/course-schedule-ii
+```
+Topological sort: dfs and marking temporarily while visiting children or permanently
+```
+
+- Topological sort:
+  DFS because you need to find the deepest dependency. the leaves of tree.
+  Use a stack. for each node: run dfs. when visiting nodes mark them Temporarily and go deep.
+  when you get to a dead end of no more ways to go, put in stack and mark permanently.
+  if you find a permanent mark during dfs its fine. if you find a temp mark its a cycle. dependancy loop
 
 - find number of islands in 2d array or 1 and 0: DFS and set 0 when visit
-- given a word and a list of dict words, find out if you can construct the word using dict words
-  sol 1: dp: f(i) = find if sub(x, i) is in dict word where x < i and f(x) = true
-  sol 2: dfs: use a stack to store unmatched reminder of strings. pop and find if there is a dict word it starts with. put reminder in stack.
 - merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
-
 - min swap to group all ones together: a group of 1 with length n, use sliging window find the window with most ones.
  this will be the window you will need least swaps. answer is num of 0s in this window.
 - BFS is a shortest path algorithm.
@@ -322,77 +348,98 @@ Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed
 - Finding words in n*m grid of chars: DFS
 - You can use a sorted array and bsearch for min and max heap (or priority queue)
 - find max in sliding window: use double ended queue. always keep it DESC (pop from right if you have to). push to right of it. pop from left to throw away any index out of this sliding window.
-- Topological sort:
-  DFS because you need to find the deepest dependency. the leaves of tree.
-  Use a stack. for each node: run dfs. when visiting nodes mark them Temporarily and go deep.
-  when you get to a dead end of no more ways to go, put in stack and mark permanently.
-  if you find a permanent mark during dfs its fine. if you find a temp mark its a cycle. dependancy loop
 - Priority Queue is good for when you want to pop a max and still have another max ready to pop or min (specially for problems where max and min of subarrays is concerned)
 - for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
 that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
 from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
 - Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
 
-Good Problems
-https://leetcode.com/problems/range-addition/
-    Another version of merging intervals
-https://leetcode.com/problems/sliding-window-maximum/
-    Use a double ended queue and keep it monotonously decreasing. so when you see a big number at the current index, there is no chance
-    that smaller numbers before this can ever be max. so pop right of the queue until you get an element that is bigger.
-https://leetcode.com/problems/sell-diminishing-valued-colored-balls
-    5 3 3 3 1 1 = 1(5 + 4) + 4(3 + 2) + 6 (1 + 0)
-    7 7 4 2 1 = 2(7 + 6 + 5) + 3(4 + 3) + 4(2) + 5(1)
-https://leetcode.com/problems/word-break/
-    BFS or DP
-https://leetcode.com/problems/course-schedule-ii
-    Topological sort. DFS
-https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
-    Use two Deques: max_deque and min_deque. keep 2 pointers i j. move j right, and update deques. then if max - min is bigger than limit move i right until it fixes
-    now check if j - i is max
-https://leetcode.com/problems/median-of-two-sorted-arrays
-    LEARN THIS **************
-https://leetcode.com/problems/gas-station/
-    diffs and suffix sum
-https://leetcode.com/problems/design-an-expression-tree-with-evaluate-function/
-    having postfix, start from the end. if you see operator, push to stack, if you see number,
-    attach it as the missing child of operator at top of stack. if the operator has both its
-    left and right children, continue attaching this to the next element in stack.
-https://leetcode.com/problems/build-binary-expression-tree-from-infix-expression
-    having the expression string, start from beginning. if you see number push it to stack. if you see
-    + or - you must try to attach all nodes in stack (or up until '(') so far as its left child.
-    if you see * or / you must attach the top of stack as left child. if you see open paranthesis push it to stack
-    and when you see close paranthesis, build entire sub tree in stack up until open par, pop open par and push the sbtree to stack.
-    at the end built the entire tree attaching subtrees in stack to right of prev element in stack.
-https://leetcode.com/problems/symmetric-tree
-      LRO(root.left) == RLO(root.right)
-https://leetcode.com/problems/binary-tree-maximum-path-sum/
-  for each node (starting from root): the answer is max of below:
-    left_to_leaves_max + right_to_leaves_max + node.val
-    left_to_leaves_max + node
-    right_to_leaves_max + node
-    node
-    max_path_sum(left child)
-    max_path_sum(right child)
-https://leetcode.com/problems/diameter-of-binary-tree
-  for each node(starting from root) the answer is max of below
-    max_height_left + max_height_right + 2
-    diameter(left_child)
-    diameter(right_child)
-https://leetcode.com/problems/word-ladder/ and https://leetcode.com/problems/word-ladder-ii
-  perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
-https://leetcode.com/problems/course-schedule and https://leetcode.com/problems/course-schedule-ii
-  Topological sort: dfs and marking temporarily while visiting children or permanently
-https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree
-  find path from root to p and q, return the last equal node in the prefixes of these paths:
-  [1, 2, 3], [1, 2, 5] => 2
-https://leetcode.com/problems/longest-substring-without-repeating-characters
-  use a map to keep latest index of every char and use 2 pointers
-https://leetcode.com/problems/container-with-most-water
-  Greedy. sort and keep poping maxes. every time, if the max expands the window, update window start and end index and see if max changes
-https://leetcode.com/problems/3sum
-  Sort first. for i 0..len start j from i + 1 to forward and k from len - 1 to backwards
-https://leetcode.com/problems/minimum-window-substring/
-  two pointers. move right until you find all chars you need. use a map to count chars in current window and target string. and keep track of number of characters which you
-  have enough counts for. when you see reach the window with all chars counts satisfied save this substring and move left forward untill the window becomes invalid again.
-https://leetcode.com/problems/trapping-rain-water/
-  prefix max suffix max
+## Good Problems
+- Ref: https://leetcode.com/problems/range-addition/
+Another version of merging intervals
+
+- https://leetcode.com/problems/sliding-window-maximum/
+```
+Use a double ended queue and keep it monotonously decreasing. so when you see a big number at the current index, there is no chance
+that smaller numbers before this can ever be max. so pop right of the queue until you get an element that is bigger.
+```
+- https://leetcode.com/problems/sell-diminishing-valued-colored-balls
+```
+5 3 3 3 1 1 = 1(5 + 4) + 4(3 + 2) + 6 (1 + 0)
+7 7 4 2 1 = 2(7 + 6 + 5) + 3(4 + 3) + 4(2) + 5(1)
+```
+- https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
+```
+Use two Deques: max_deque and min_deque. keep 2 pointers i j. move j right, and update deques. then if max - min is bigger than limit move i right until it fixes
+now check if j - i is max
+```
+- https://leetcode.com/problems/median-of-two-sorted-arrays
+- https://leetcode.com/problems/gas-station/
+```
+diffs and suffix sum
+```
+- https://leetcode.com/problems/design-an-expression-tree-with-evaluate-function/
+```
+having postfix, start from the end. if you see operator, push to stack, if you see number,
+attach it as the missing child of operator at top of stack. if the operator has both its
+left and right children, continue attaching this to the next element in stack.
+```
+- https://leetcode.com/problems/build-binary-expression-tree-from-infix-expression
+```
+having the expression string, start from beginning. if you see number push it to stack. if you see
++ or - you must try to attach all nodes in stack (or up until '(') so far as its left child.
+if you see * or / you must attach the top of stack as left child. if you see open paranthesis push it to stack
+and when you see close paranthesis, build entire sub tree in stack up until open par, pop open par and push the sbtree to stack.
+at the end built the entire tree attaching subtrees in stack to right of prev element in stack.
+```
+- https://leetcode.com/problems/symmetric-tree
+```
+LRO(root.left) == RLO(root.right)
+```
+- https://leetcode.com/problems/binary-tree-maximum-path-sum/
+```
+for each node (starting from root): the answer is max of below:
+  left_to_leaves_max + right_to_leaves_max + node.val
+  left_to_leaves_max + node
+  right_to_leaves_max + node
+  node
+  max_path_sum(left child)
+  max_path_sum(right child)
+```
+- https://leetcode.com/problems/diameter-of-binary-tree
+```
+for each node(starting from root) the answer is max of below
+  max_height_left + max_height_right + 2
+  diameter(left_child)
+  diameter(right_child)
+```
+- https://leetcode.com/problems/word-ladder/ and https://leetcode.com/problems/word-ladder-ii
+```
+perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
+```
+- https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree
+```
+find path from root to p and q, return the last equal node in the prefixes of these paths:
+[1, 2, 3], [1, 2, 5] => 2
+```
+- https://leetcode.com/problems/longest-substring-without-repeating-characters
+```
+use a map to keep latest index of every char and use 2 pointers
+```
+- https://leetcode.com/problems/container-with-most-water
+```
+Greedy. sort and keep poping maxes. every time, if the max expands the window, update window start and end index and see if max changes
+```
+- https://leetcode.com/problems/3sum
+```
+Sort first. for i 0..len start j from i + 1 to forward and k from len - 1 to backwards
+```
+- https://leetcode.com/problems/minimum-window-substring/
+```
+two pointers. move right until you find all chars you need. use a map to count chars in current window and target string. and keep track of number of characters which you
+have enough counts for. when you see reach the window with all chars counts satisfied save this substring and move left forward untill the window becomes invalid again.
+```
+- https://leetcode.com/problems/trapping-rain-water/
+```
+prefix max suffix max
+```
