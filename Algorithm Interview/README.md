@@ -311,41 +311,67 @@ Solution:
 Exactly similar to problem 2, except you sort and start from index 1, and try to use wordDict: 0..i
 ```
 
-# Differnet DFS traverse
-## Inorder: L Root R
-  inorder of bst will return a sorted array
-## Preorder: Root L R
-  copying tree or make a prefix notation of a math expression
-## Postorder: L R Root
-  Deleting tree of make a postfix notation of a math expression
+# Depth First Search
+DFS has 3 variations when the tree is Binary search tree:
+- **Inorder:** L Root R. Example: Infix notation of math expressions like `4 + 5`
+- **Preorder** Root L R. Example: Prefix notation of math expressions like `+ 4 5`
+- **Postorder** L R Root. Example: Postfix notation of math expressions like `4 5 +`
 
-### Math expression notations:
-- Prefix notation: + 4 5 (doesnt need paranthesis as long as operators take fixed num of operands)
-- Infix  notation: 4 + 5 (requires parathensis)
-- Postfix notation: 4 5 + (doesnt need paranthesis as long as operators take fixed num of operands)
+DFS is implemnted using stack. First, Root is pushed to the stack. then while the stack is not empty, you keep poping the stack top element and put back its children at the top of the stack. We can also use recursive functions because function calls are also implemented using stacks under the hood.
 
+Which DFS traverse gives you sorted array of number if you have stored the array using BST?
+- Inoreder
+
+Which of Infix, postfix, prefix math expression notations require paranthesis?
+- Only infix, or if the number of arguments are not fixed all of them need paranthesis.
+
+Which DFS traverse is best for copying trees?
+- Preorder because you need to copy root first.
+
+Which DFS traverse is best for deleting BSTs?
+- Postorder: because root has to be deleted after left and write childrens
+
+## Topological sort
+Topological Sort is an algorithm used to find a linear ordering of the nodes in a directed acyclic graph (DAG).
+
+The intuition behind this algorithm is that the "deepest" nodes (i.e. the leaves of the DAG) will be visited and marked as "Permanently Visited" first, and then added to the stack in reverse order, resulting in a valid topological ordering.
+
+It is particularly useful when working with dependencies: such as software dependencies, scheduling tasks or courses that have dependencies to each other.
+
+### Implementation
+For each node, run DFS:
+- Mark the node as "Temporarily Visited" when you first encounter them.
+- Recursively explore all of the node's dependencies (or childrens).
+- When you reach a "dead end" with no more unvisited children, mark the node as "Permanently Visited" and add it to a stack.
+- The final topological order is obtained by popping elements off the stack. The last element pushed onto the stack will be the first element in the topological order.
+- **Cycle Detection**: If during the DFS you encounter a node that is already "Temporarily Visited", then you have found a cycle in the graph, which means the graph is not a DAG and cannot be topologically sorted.
+
+
+Exmaple Problems:
 - https://leetcode.com/problems/course-schedule
 - https://leetcode.com/problems/course-schedule-ii
+- find number of islands in 2d array of 1s and 0s
 ```
-Topological sort: dfs and marking temporarily while visiting children or permanently
+DFS and set 0 when visit
+```
+- Finding words in n*m grid of chars
+
+
+# Breath first search
+- BFS is usually written as you push the root of search to a Queue, then you pop the queue head and push its children to the end of the queue
+- BFS is a shortest path algorithm.
+- https://leetcode.com/problems/word-ladder/
+- https://leetcode.com/problems/word-ladder-ii
+```
+perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
 ```
 
-- Topological sort:
-  DFS because you need to find the deepest dependency. the leaves of tree.
-  Use a stack. for each node: run dfs. when visiting nodes mark them Temporarily and go deep.
-  when you get to a dead end of no more ways to go, put in stack and mark permanently.
-  if you find a permanent mark during dfs its fine. if you find a temp mark its a cycle. dependancy loop
 
-- find number of islands in 2d array or 1 and 0: DFS and set 0 when visit
 - merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
 - min swap to group all ones together: a group of 1 with length n, use sliging window find the window with most ones.
  this will be the window you will need least swaps. answer is num of 0s in this window.
-- BFS is a shortest path algorithm.
-- BFS and DFS usually is written as you put the root of search in stack (DFS) or Queue(BFS), then you pop it and put its children
-- find shortest transformation sequence. use BFS
 - Trie Tree is very good to find if a string or any of its prefixes is in a set or not? it can help telling you stop the search because this string is not a prefix of any word.
 - Trapped water problem: for every index: trapped water = lesser of maxes on left and right - height of this index
-- Finding words in n*m grid of chars: DFS
 - You can use a sorted array and bsearch for min and max heap (or priority queue)
 - find max in sliding window: use double ended queue. always keep it DESC (pop from right if you have to). push to right of it. pop from left to throw away any index out of this sliding window.
 - Priority Queue is good for when you want to pop a max and still have another max ready to pop or min (specially for problems where max and min of subarrays is concerned)
@@ -412,10 +438,6 @@ for each node(starting from root) the answer is max of below
   max_height_left + max_height_right + 2
   diameter(left_child)
   diameter(right_child)
-```
-- https://leetcode.com/problems/word-ladder/ and https://leetcode.com/problems/word-ladder-ii
-```
-perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
 ```
 - https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree
 ```
