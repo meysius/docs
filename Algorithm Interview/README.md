@@ -34,6 +34,13 @@ objects.sort((a, b) => a - b)
 // divisions geneerate floats. use Math.floor or Math.ceil for rounding
 5 / 2    // = 2.5
 
+//
+objects.reduce(
+  (acc, element) => {
+    return some acc;
+  },
+  init_val
+)
 
 // Class notation
 class Person {
@@ -339,17 +346,75 @@ The intuition behind this algorithm is that the "deepest" nodes (i.e. the leaves
 It is particularly useful when working with dependencies: such as software dependencies, scheduling tasks or courses that have dependencies to each other.
 
 ### Implementation
-For each node, run DFS:
-- Mark the node as "Temporarily Visited" when you first encounter them.
-- Recursively explore all of the node's dependencies (or childrens).
-- When you reach a "dead end" with no more unvisited children, mark the node as "Permanently Visited" and add it to a stack.
-- The final topological order is obtained by popping elements off the stack. The last element pushed onto the stack will be the first element in the topological order.
-- **Cycle Detection**: If during the DFS you encounter a node that is already "Temporarily Visited", then you have found a cycle in the graph, which means the graph is not a DAG and cannot be topologically sorted.
+First, build the DAG. Dag could be as simple of hash:
+```
+{
+  node i => [j, k , ...] that are dependencies of i
+}
+```
+Also track of visit statuses. It could be a hash of:
+```
+{
+  node i => not yet seen: 0 or opened and currently exploring the subtress of it: 1, or finished exploring all subtrees and closed: 2
+}
+```
+Always prefer function implementation of DFS algorithm. So we have to define a function that takes a node and traverses the graph and returns true if done successfully or false if a cycle is detected. As this function runs, visits hash changes and as soon as nodes are closed they are collected somewhere. This collection will be the topological order. At the beginning of this function, check if node i is already opened, if it is then you have detected a cycle and should return false. also check if you have already explored this node, if so return true before doing anything. Then set node opened, traverse all its childern. if any of the children had a cycle then return false. finally set node closed and collect it and return true.
+
+You have to traverse all nodes. to make sure you collect all the nodes.
+
+Code:
+```javascript
+// courses = 4, deps = [[1,0],[2,0],[3,1],[3,2]]
+// [1, 0] means 1 depends on 0: 1 -> 0
+var findTopologicalOrder = function(courses, deps) {
+  const dag = deps.reduce(
+      (acc, dep) => {
+          acc[dep[0]] ||= []
+          acc[dep[0]].push(dep[1]);
+          return acc;
+      },
+      {}
+  );
+
+  // 0 indicates unvisisted
+  // 1 indicates currently open, traversing subtrees is in progress
+  // 2 indicates and closed
+  const visits = Array(courses).fill(0);
+
+  const result = [];
+  // returns true when fully traverse
+  function dfs(i) {
+    if (visits[i] === 1) return false;
+    if (visits[i] === 2) return true;
+
+    visits[i] = 1;
+    const children = dag[i] || [];
+    for(let k of children) {
+      const exp = dfs(k)
+      if (exp === false) { return false }
+    }
+
+
+    result.push(i)
+    visits[i] = 2
+    return true
+  }
+
+  for (let i = 0; i < courses; i++) {
+    if (!dfs(i)) {
+      return [];
+    }
+  }
+
+  return result;
+};
+```
 
 
 Exmaple Problems:
-- https://leetcode.com/problems/course-schedule
 - https://leetcode.com/problems/course-schedule-ii
+```
+```
 - find number of islands in 2d array of 1s and 0s
 ```
 DFS and set 0 when visit
@@ -358,8 +423,8 @@ DFS and set 0 when visit
 
 
 # Breath first search
-- BFS is usually written as you push the root of search to a Queue, then you pop the queue head and push its children to the end of the queue
-- BFS is a shortest path algorithm.
+BFS is implemnted using Queues. First, Root is pushed to the queue. Then you pop the queue head and push its children to the end of the queue.
+BFS is the golden standard algorithm for finding shortest paths. For example:
 - https://leetcode.com/problems/word-ladder/
 - https://leetcode.com/problems/word-ladder-ii
 ```
