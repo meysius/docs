@@ -320,6 +320,23 @@ Solution:
 Exactly similar to problem 2, except you sort and start from index 1, and try to use wordDict: 0..i
 ```
 
+**Example 5.**
+- Ref: https://leetcode.com/problems/trapping-rain-water
+```
+If for every index, we find index of max element on left and right, then the trapped water is calculated by summing up trapped water on every index.
+
+For every index:
+Trapped water = (Min(max_on_left, max_on_right) - height of this index) if > 0 otherwise 0
+
+So now for heights: [4,2,0,3,2,5] we need to find below:
+left_max = [0,0,0,0,0,5]
+right_max = [5,5,5,5,5,5]
+
+DP check: If we have answer left_max = [0,0,0,0,0] for [4,2,0,3,2], can we find the left_max for the 5 at the end?
+Yes, every time you add an element to input at the end, the left_max of it is either itself or the left_max of its previous element.
+right max is also same except you walk from right to left.
+```
+
 # Depth First Search
 DFS has 3 variations when the tree is Binary search tree:
 - **Inorder:** L Root R. Example: Infix notation of math expressions like `4 + 5`
@@ -438,11 +455,6 @@ perform bfs search, start from begin_word and try to swap letter with a..z to fi
 for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
 that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
 from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
-```
-- https://leetcode.com/problems/trapping-rain-water
-```
-prefix max suffix max
-for every index: trapped water = lesser of maxes on left and right - height of this index
 ```
 - https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together
 ```
