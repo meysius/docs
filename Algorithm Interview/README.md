@@ -441,6 +441,7 @@ from the left and push element to the right maintaining the DESC order. so pop f
 ```
 - https://leetcode.com/problems/trapping-rain-water
 ```
+prefix max suffix max
 for every index: trapped water = lesser of maxes on left and right - height of this index
 ```
 - https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together
@@ -533,8 +534,4 @@ Sort first. for i 0..len start j from i + 1 to forward and k from len - 1 to bac
 ```
 two pointers. move right until you find all chars you need. use a map to count chars in current window and target string. and keep track of number of characters which you
 have enough counts for. when you see reach the window with all chars counts satisfied save this substring and move left forward untill the window becomes invalid again.
-```
-- https://leetcode.com/problems/trapping-rain-water/
-```
-prefix max suffix max
 ```
