@@ -313,16 +313,17 @@ you want to check all of them and return the composition for each.
 
 Ref: https://leetcode.com/problems/word-break-ii
 
-**Example 4.**
-Ref: https://leetcode.com/problems/concatenated-words/
+**Example 4.** https://leetcode.com/problems/concatenated-words/
 ```
 Solution:
+
 Exactly similar to problem 2, except you sort and start from index 1, and try to use wordDict: 0..i
 ```
 
-**Example 5.**
-- Ref: https://leetcode.com/problems/trapping-rain-water
+**Example 5.** https://leetcode.com/problems/trapping-rain-water
 ```
+Solution:
+
 If for every index, we find index of max element on left and right, then the trapped water is calculated by summing up trapped water on every index.
 
 For every index:
