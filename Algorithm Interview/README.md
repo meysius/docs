@@ -218,6 +218,8 @@ function greaterRight(nums) {
 }
 ```
 
+Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
+
 ### Example questions
 **Example 1.** Given array nums, find the sum of minimums or maximums of all subarrays of nums.
 ```
@@ -413,13 +415,8 @@ var findTopologicalOrder = function(courses, deps) {
 
 Exmaple Problems:
 - https://leetcode.com/problems/course-schedule-ii
-```
-```
-- find number of islands in 2d array of 1s and 0s
-```
-DFS and set 0 when visit
-```
-- Finding words in n*m grid of chars
+- https://leetcode.com/problems/number-of-islands
+- https://leetcode.com/problems/word-search
 
 
 # Breath first search
@@ -431,24 +428,35 @@ BFS is the golden standard algorithm for finding shortest paths. For example:
 perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
 ```
 
-
-- merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
-- min swap to group all ones together: a group of 1 with length n, use sliging window find the window with most ones.
- this will be the window you will need least swaps. answer is num of 0s in this window.
-- Trie Tree is very good to find if a string or any of its prefixes is in a set or not? it can help telling you stop the search because this string is not a prefix of any word.
-- Trapped water problem: for every index: trapped water = lesser of maxes on left and right - height of this index
-- You can use a sorted array and bsearch for min and max heap (or priority queue)
-- find max in sliding window: use double ended queue. always keep it DESC (pop from right if you have to). push to right of it. pop from left to throw away any index out of this sliding window.
+# Priority queues
 - Priority Queue is good for when you want to pop a max and still have another max ready to pop or min (specially for problems where max and min of subarrays is concerned)
-- for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
-that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
-from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
-- Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
+- You can use a sorted array and bsearch for min and max heap (or priority queue)
 
 ## Good Problems
-- Ref: https://leetcode.com/problems/range-addition/
-Another version of merging intervals
+- https://leetcode.com/problems/sliding-window-maximum
+```
+for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
+that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
+from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
+```
+- https://leetcode.com/problems/trapping-rain-water
+```
+for every index: trapped water = lesser of maxes on left and right - height of this index
+```
+- https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together
+```
+use sliging window find the window with most ones. this will be the window you will need least swaps. answer is num of 0s in this window.
+```
 
+- https://leetcode.com/problems/merge-intervals
+```
+merging intervals: put all starts and ends (with marks 's', 'e') in a array, sort them, then use that array to solve the problem
+```
+
+- https://leetcode.com/problems/range-addition/
+```
+Another version of merging intervals
+```
 - https://leetcode.com/problems/sliding-window-maximum/
 ```
 Use a double ended queue and keep it monotonously decreasing. so when you see a big number at the current index, there is no chance
