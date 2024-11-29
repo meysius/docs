@@ -3,23 +3,20 @@
 let a = [1, 2, 3]
 
 // from i to j not including j itself. meaining a.slice(i, i) will be []
-a.slice(i, j)
+a = a.slice(i, j) concat with  a.slice(j)
 // or for strings:
 "abcdef".substring(i, j)
 
 // get 2 elements starting from i, if not enough elements, get all of them up to the end.
-// meaning the second element can go out of range.
+// the second param can go out of range, it is safe
 a.slice(i, i + 2)
 
 // from i to end
 a.slice(i)
 a.slice(i, a.length)
 
-// from i to end, except the last n elements
-a.slice(i, a.length - n)
-
-// n last elements
-a.slice(-n)
+//  Split n items from the end of a
+a.slice(i, a.length - n) ... a.slice(a.length - n)
 
 // this is allowed and will return []
 a.slice(100000)
@@ -146,9 +143,10 @@ function top(stack) {
   return stack[stack.length - 1]
 }
 
+
 function lessLeft(nums) {
   const result = Array(nums.length).fill(-1)
-  const stack = []  // this will be ascending stack. => popping every time, you will reach an index with less value below the top of the stack
+  const stack = []  // this will be ASC stack. => popping every time, you will reach an index with less value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
     while (stack.length > 0 && nums[top(stack)] >= nums[i]) {
       stack.pop()
@@ -168,7 +166,7 @@ function lessLeft(nums) {
 
 function lessRight(nums) {
   const result = Array(nums.length).fill(nums.length)
-  const stack = [] // this will be ascending stack. => popping every time, you will reach an index with less value below the top of the stack
+  const stack = [] // this will be ASC stack. => popping every time, you will reach an index with less value below the top of the stack
   for (let i = 0; i < nums.length; i++) {
     while (stack.length > 0 && nums[top(stack)] > nums[i]) {
       result[stack.pop()] = i
@@ -410,8 +408,7 @@ var findTopologicalOrder = function(courses, deps) {
     visits[i] = 1;
     const children = dag[i] || [];
     for(let k of children) {
-      const exp = dfs(k)
-      if (exp === false) { return false }
+      if (dfs(k) === false) { return false }
     }
 
 
@@ -440,10 +437,12 @@ Exmaple Problems:
 # Breath first search
 BFS is implemnted using Queues. First, Root is pushed to the queue. Then you pop the queue head and push its children to the end of the queue.
 BFS is the golden standard algorithm for finding shortest paths. For example:
-- https://leetcode.com/problems/word-ladder/
 - https://leetcode.com/problems/word-ladder-ii
 ```
+Solution:
 perform bfs search, start from begin_word and try to swap letter with a..z to find one that is in the dict
+to implement bfs, we create a function that takes a list of objects, each corresponding to a node in current graph level. At the beginning of the function we add termination logic. Then we start processing every node and we replace that node with its children. once all the children of next level are collected, and at the end of the bfs function, we call bfs on the nodes of next level.
+
 ```
 
 # Priority queues
@@ -451,11 +450,11 @@ perform bfs search, start from begin_word and try to swap letter with a..z to fi
 - You can use a sorted array and bsearch for min and max heap (or priority queue)
 
 ## Good Problems
+
 - https://leetcode.com/problems/sliding-window-maximum
 ```
-for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less than
-that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements
-from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
+Solution:
+for problems where you want to find max (or min) in sliding windows, since the window is sliding, as soon as you find a greater value on the right, you wont need values less that on the left because for this and every future window, these values wont become max. so you can use double ended queue. when you slide the window you should pop elements from the left and push element to the right maintaining the DESC order. so pop from right until you dont have any values less than this. then put it on the right.
 ```
 - https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together
 ```
@@ -473,8 +472,7 @@ Another version of merging intervals
 ```
 - https://leetcode.com/problems/sliding-window-maximum/
 ```
-Use a double ended queue and keep it monotonously decreasing. so when you see a big number at the current index, there is no chance
-that smaller numbers before this can ever be max. so pop right of the queue until you get an element that is bigger.
+Use a double ended queue and keep it monotonously decreasing. so when you see a big number at the current index, there is no chance that smaller numbers before this can ever be max. so pop right of the queue until you get an element that is bigger.
 ```
 - https://leetcode.com/problems/sell-diminishing-valued-colored-balls
 ```
@@ -483,7 +481,7 @@ that smaller numbers before this can ever be max. so pop right of the queue unti
 ```
 - https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/
 ```
-Use two Deques: max_deque and min_deque. keep 2 pointers i j. move j right, and update deques. then if max - min is bigger than limit move i right until it fixes
+Use two double ended queues: max_deque and min_deque. keep 2 pointers i j. move j right, and update deques. then if max - min is bigger than limit move i right until it fixes
 now check if j - i is max
 ```
 - https://leetcode.com/problems/median-of-two-sorted-arrays
