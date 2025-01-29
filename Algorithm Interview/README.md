@@ -15,7 +15,7 @@ a.slice(i, i + 2)
 a.slice(i)
 a.slice(i, a.length)
 
-//  Split n items from the end of a
+//  taking n last items from a
 a.slice(i, a.length - n) ... a.slice(a.length - n)
 
 // this is allowed and will return []
@@ -23,7 +23,7 @@ a.slice(100000)
 
 
 // Injection:
-a.splice(i, delete_count, array_to_inject)
+a.splice(i, delete_count, ...array_to_inject)
 
 // asc sort
 objects.sort((a, b) => a - b)
@@ -54,21 +54,20 @@ class Person {
 # Binary search
 ```javascript
 const bsearch = (arr, target) => {
-  let i = 0, j = arr.length - 1;
+  let left = 0, right = arr.length - 1;
 
-  while (i <= j) {
-    let mid = Math.floor((i + j) / 2)
-    const val = arr[mid]
-    if (target === val) {
+  while (left <= right) {
+    let mid = Math.floor((left + right) / 2)
+    if (arr[mid] === target) {
       return [true, mid]
-    } else if (target > val) {
-      i = mid + 1
+    } else if (arr[mid] < target) {
+      left = mid + 1
     } else {
-      j = mid - 1
+      right = mid - 1
     }
   }
 
-  return [false, i]
+  return [false, left]
 }
 ```
 
