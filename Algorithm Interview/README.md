@@ -152,22 +152,41 @@ class PrefixNode {
 }
 ```
 
-# Finding closest less or greater indexes
+# Finding closest less or greater indexes on left or right
 
-- For each element in the array nums, find the index of the closest element on the left (if any) that is less than the current element. If no such element exists, store -1.
+1. (closesLessOnLeft) For each element in the array nums, find the index of the closest element on the left (if any) that is less than the current element. If no such element exists, store -1.
 ```
-// For example for nums = [  2,  1,  5,  6,  2,  3]
-// We are looking for     [ -1, -1,  1,  2,  1,  4]
+For example for nums   [  2,  1,  5,  6,  2,  3]
+We are looking for     [ -1, -1,  1,  2,  1,  4]
 ```
 
-```javascript
+2. (closestGreaterOnLeft) For each element in the array nums, find the index of the closest element on the left (if any) that is greater than the current element. If no such element exists, store -1.
+```
+For example for nums   [  2,  1,  5,  6,  2,  3 ]
+We are looking for     [ -1,  0, -1, -1,  3,  3 ]
+```
+
+3. (closestLessOnRight) For each element in the array nums, find the index of the closest element on the right that is less than the current element. If no such element exists, store `nums.length`.
+```
+For example for nums   [  2,  1,  5,  6,  2,  3]
+We are looking for     [  1,  6,  4,  4,  6,  6]
+```
+
+4. (closestGreaterOnRight) For each element in the array nums, find the index of the closest element on the right that is greater than the current element. If no such element exists, store `nums.length`.
+```
+For example for nums   [  2,  1,  5,  6,  2,  3]
+We are looking for     [  2,  2,  3,  6,  5,  6]
+```
+
+Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful.
+```js
 function top(stack) {
-  return stack[stack.length - 1]
+  return stack[stack.length - 1];
 }
 
-function lessLeft(nums) {
+function closestLessOnLeft(nums) {
   const result = Array(nums.length).fill(-1)
-  const stack = []  // this will be ASC stack. => popping every time, you will reach an index with less value below the top of the stack
+  const stack = []
   for (let i = 0; i < nums.length; i++) {
     while (stack.length > 0 && nums[top(stack)] >= nums[i]) {
       stack.pop()
@@ -177,67 +196,48 @@ function lessLeft(nums) {
   }
   return result
 }
-```
 
-- For each element in the array nums, find the index of the closest element on the right that is less than the current element. If no such element exists, store `nums.length`.
-
-```javascript
-// For example for nums = [  2,  1,  5,  6,  2,  3]
-// We are looking for     [  1,  6,  4,  4,  6,  6]
-
-function lessRight(nums) {
-  const result = Array(nums.length).fill(nums.length)
-  const stack = [] // this will be ASC stack. => popping every time, you will reach an index with less value below the top of the stack
+function closestGreaterOnLeft(nums) {
+  let result = Array(nums.length).fill(-1)
+  let stack = []
   for (let i = 0; i < nums.length; i++) {
-    while (stack.length > 0 && nums[top(stack)] > nums[i]) {
-      result[stack.pop()] = i
+    while(stack.length > 0 && nums[top(stack)] <= nums[i]) {
+      stack.pop()
     }
+    result[i] = top(stack) || -1
+    stack.push(i)
+  }
+  return result;
+}
+
+
+function closestLessOnRight(nums) {
+  let result = Array(nums.length).fill(nums.length);
+  let stack = []
+  for (let i = nums.length - 1; i >= 0; i--) {
+    while (stack.length > 0 && nums[top(stack)] >= nums[i]) {
+      stack.pop()
+    }
+    result[i] = top(stack) || nums.length;
     stack.push(i)
   }
   return result
 }
-```
 
-- For each element in the array nums, find the index of the closest element on the left (if any) that is greater than the current element. If no such element exists, store -1.
+function closestGreaterOnRight(nums) {
+  let result = Array(nums.length).fill(nums.length)
+  let stack = []
 
-```javascript
-// For example for nums = [  2,  1,  5,  6,  2,  3]
-// We are looking for     [ -1,  0, -1, -1,  3,  3]
-
-function greaterLeft(nums) {
-  const result = Array(nums.length).fill(-1)
-  const stack = [] // this will be descending stack. => popping every time, you will reach an index with greater value below the top of the stack
-  for (let i = 0; i < nums.length; i++) {
+  for (let i = nums.length - 1; i >= 0; i--) {
     while (stack.length > 0 && nums[top(stack)] <= nums[i]) {
       stack.pop()
     }
-    result[i] = stack.length > 0 ? top(stack) : -1
+    result[i] = top(stack) || nums.length
     stack.push(i)
   }
   return result
 }
 ```
-
-- For each element in the array nums, find the index of the closest element on the right that is greater than the current element. If no such element exists, store `nums.length`.
-
-```javascript
-// For example for nums = [  2,  1,  5,  6,  2,  3]
-// We are looking for     [  2,  2,  3,  6,  5,  6]
-
-function greaterRight(nums) {
-  const result = Array(nums.length).fill(nums.length)
-  const stack = [] // this will be descending stack. => popping every time, you will reach an index with greater value below the top of the stack
-  for (let i = 0; i < nums.length; i++) {
-    while (stack.length > 0 && nums[top(stack)] < nums[i]) {
-      result[stack.pop()] = i
-    }
-    stack.push(i)
-  }
-  return result
-}
-```
-
-Array problems which for each i asks for operations on all elements execpt i prefix and suffix operations may be helpful
 
 ### Example questions
 **Example 1.** Given array nums, find the sum of minimums or maximums of all subarrays of nums.
