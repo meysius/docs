@@ -111,7 +111,7 @@ const merge = (nums1, nums2) => {
 
 
 # Prefix Tree (Trie)
-This tree is used for storing a set of strings:
+Trie is a data structure for storing a set of strings.
 ```
         root
          |
@@ -122,7 +122,10 @@ This tree is used for storing a set of strings:
      't' 'p' 'r'
    (end) (end) (end)
 ```
-- Each node of this tree represents a suffix and stores a map with keys being possible characters after this prefix and value of each key pointing to the child node for resulting prefix.
+- Each node represents a possible prefix in one or more strings in the set
+- Each node has a `children` which is a map with:
+  - key: a possible character that can come after this prefix
+  - value: another node representing the prefix produced by adding the character
 - Each node could also have a boolean, denoting the end of a valid word.
 - This tree can be used to:
   - Find out if a string is in a set?
@@ -152,15 +155,15 @@ class PrefixNode {
 # Finding closest less or greater indexes
 
 - For each element in the array nums, find the index of the closest element on the left (if any) that is less than the current element. If no such element exists, store -1.
-
-```javascript
+```
 // For example for nums = [  2,  1,  5,  6,  2,  3]
 // We are looking for     [ -1, -1,  1,  2,  1,  4]
+```
 
+```javascript
 function top(stack) {
   return stack[stack.length - 1]
 }
-
 
 function lessLeft(nums) {
   const result = Array(nums.length).fill(-1)
