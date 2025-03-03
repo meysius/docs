@@ -1,58 +1,77 @@
 # Basics
-```javascript
-let a = [1, 2, 3]
+Getting subarray from i to j not including j itself fromm `arr`:
+```
+arr.slice(i, j)
+```
 
-// from i to j not including j itself. meaining a.slice(i, i) will be []
-a = a.slice(i, j) concat with  a.slice(j)
-// or for strings:
-"abcdef".substring(i, j)
+Do the same with string `s`:
+```
+s.substring(i, j)
+```
 
-// get 2 elements starting from i, if not enough elements, get all of them up to the end.
-// the second param can go out of range, it is safe
-a.slice(i, i + 2)
+What is the result of `arr.slice(i, i)`?
+```
+[]
+```
 
-// from i to end
-a.slice(i)
-a.slice(i, a.length)
+Get from j to the end of `arr`:
+```js
+arr.slice(j) // or
+arr.slice(j, arr.length)
+```
 
-//  taking n last items from a
-a.slice(i, a.length - n) ... a.slice(a.length - n)
+Cut 3 elements starting from index i of `arr`:
+```js
+arr.slice(i, i + 3) + arr.slice(i + 3)
+```
 
-// this is allowed and will return []
-a.slice(100000)
+Take n last elements of `arr`:
+```js
+arr.slice(arr.length - n)
+```
 
+What is the result of `arr.slice(100000)` if arr has less than that many elements?
+```
+[]
+```
 
-// Injection:
-a.splice(i, delete_count, ...array_to_inject)
+Delete 5 elements from index i of `arr` and then inject array `brr`:
+```js
+arr.splice(i, 5, ...brr)
+```
 
-// asc sort
-objects.sort((a, b) => a - b)
+Sort `arr` in asc order in place:
+```js
+arr.sort((a, b) => a - b)
+```
 
-// divisions geneerate floats. use Math.floor or Math.ceil for rounding
-5 / 2    // = 2.5
+What is `5 / 2`, `5 % 2`, `Math.floor(5 / 2)`, `Math.ceil(5 / 2)`?
+```
+2.5, 1, 2, 3
+```
 
-//
-objects.reduce(
-  (acc, element) => {
-    return some acc;
-  },
-  init_val
-)
+Reduce array `arr` to a single value:
+```js
+arr.reduce((acc, e) => { ... }, 0)
+```
 
-// Class notation
+Class User with constrator name and email and function talk:
+```js
 class Person {
-  constructor(name) {
+  constructor(name, email) {
     this.name = name;
+    this.email = email;
   }
 
-  greet() {
-    console.log(`Hello, my name is ${this.name}.`);
+  talk(message) {
+    console.log(`${this.name} says: ${message}`);
   }
 }
 ```
 
-# Binary search
-```javascript
+Use binary search to find the index of element with value v in sorted array `arr`.
+Return `[true, index]` if found, and `[false, closetIndex]` if not found:
+```js
 const bsearch = (arr, target) => {
   let left = 0, right = arr.length - 1;
 
@@ -71,8 +90,8 @@ const bsearch = (arr, target) => {
 }
 ```
 
-# Merging two sorted arrays
-```javascript
+Merge two sorted arrays `nums1` and `nums2`:
+```js
 const merge = (nums1, nums2) => {
   let i = 0, j = 0;
   const col = []
